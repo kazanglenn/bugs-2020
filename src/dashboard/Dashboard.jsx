@@ -9,7 +9,6 @@ import World from '../world/World';
 import Physics from '../logic/Physics';
 
 // icons
-import BugIcon from '@material-ui/icons/BugReportTwoTone';
 import PlayIcon from '@material-ui/icons/PlayCircleFilledTwoTone';
 import PauseIcon from '@material-ui/icons/PauseCircleFilledTwoTone';
 import ChartIcon from '@material-ui/icons/AssessmentTwoTone';
@@ -24,12 +23,10 @@ const useStyles = makeStyles({
     flexDirection: 'row'
   },
   content: {
-    // flex: 'auto',
+    width: "50%"
   },
   media: {
-    // justifyContent: 'center',
-    // padding: 5,
-    // height: 80,  
+    height: 106,
     width: 177
   },
 });
@@ -38,16 +35,12 @@ function Dashboard () {
 
   const classes = useStyles();
 
-  // componentDidMount() {
-  //   // Sprite.loadSprite(() => Physics.startGameLoop());
-  //   // World.gameLoop();
-  // }
-
+  // using React hooks - in place of componentDidMount()
   useEffect(() => {
     Physics.gameLoop();
   });
 
-  // use dashboard for 'world' for now - can create custom menus later
+  // hujacking dashboard for 'world' for now - can create custom menus later
 
     return (
       <div>
