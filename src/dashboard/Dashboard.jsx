@@ -16,7 +16,7 @@ import ChartIcon from '@material-ui/icons/AssessmentTwoTone';
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 500,
+    maxWidth: 600,
     maxHeight: 500,
     margin: 5,
     display: 'flex',

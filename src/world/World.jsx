@@ -3,7 +3,61 @@ import { Stage, ParticleContainer, withPixiApp, Sprite, PropTypes } from '@inlet
 import * as PIXI from "pixi.js";
 // import './World.scss';
 
-const maggot = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/maggot_tiny.png';
+const bug = '/bug.png'; // TODO - use assets folder, but how?
+
+// see https://github.com/kittykatattack/learningPixi#the-hittestrectangle-function
+function hitTestRectangle(r1, r2) {
+
+  //Define the variables we'll need to calculate
+  let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
+
+  //hit will determine whether there's a collision
+  hit = false;
+
+  // console.log("h", r1.height, r2.height);
+
+  //Find the center points of each sprite
+  r1.centerX = r1.x + r1.width / 2;
+  r1.centerY = r1.y + r1.height / 2;
+  r2.centerX = r2.x + r2.width / 2;
+  r2.centerY = r2.y + r2.height / 2;
+
+  //Find the half-widths and half-heights of each sprite
+  r1.halfWidth = r1.width / 2;
+  r1.halfHeight = r1.height / 2;
+  r2.halfWidth = r2.width / 2;
+  r2.halfHeight = r2.height / 2;
+
+  //Calculate the distance vector between the sprites
+  vx = r1.centerX - r2.centerX;
+  vy = r1.centerY - r2.centerY;
+
+  //Figure out the combined half-widths and half-heights
+  combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+  combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+  //Check for a collision on the x axis
+  if (Math.abs(vx) < combinedHalfWidths) {
+
+    //A collision might be occurring. Check for a collision on the y axis
+    if (Math.abs(vy) < combinedHalfHeights) {
+
+      //There's definitely a collision happening
+      hit = true;
+    } else {
+
+      //There's no collision on the y axis
+      hit = false;
+    }
+  } else {
+
+    //There's no collision on the x axis
+    hit = false;
+  }
+
+  //`hit` will be either `true` or `false`
+  return hit;
+};
 
 /**
 * -----------------------------------------------
@@ -11,7 +65,7 @@ const maggot = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/maggot_tiny.
 * -----------------------------------------------
 */
 const config = {
-  maggots: 100,
+  bugs: 50,
 
   properties: {
     position: true,
@@ -32,7 +86,7 @@ const config = {
 */
 class Settings extends React.PureComponent {
 
-  state = { ...config.properties, maggots: config.maggots, changed: false }
+  state = { ...config.properties, bugs: config.bugs, changed: false }
 
   componentDidMount() {
     config.listeners.push(this.onChange)
@@ -53,12 +107,12 @@ class Settings extends React.PureComponent {
 
 /**
 * -----------------------------------------------
-* Maggot Component
+* Bug Component
 * -----------------------------------------------
 */
-const Maggot = props => (
+const Bug = props => (
   <Sprite {...props}
-    image={maggot}
+    image={bug}
     anchor={0.5}
     overwriteProps={true}
     ignoreEvents={true} />
@@ -88,22 +142,25 @@ const Batch = withPixiApp(class extends React.PureComponent {
       count: nextProps.count,
       component: nextProps.component,
       items: [...Array(nextProps.count)].map(() => ({
-        speed: (2 + Math.random() * 2) * 0.2,
+        speed: (2 + Math.random() * 4) * 0.2,
         offset: Math.random() * 100,
         turningSpeed: Math.random() - 0.8,
         direction: Math.random() * Math.PI * 2,
-        tint: Math.random() * 0x808080,
-        x: Math.random() * 500,
+        tint: Math.random() * 0xFA8072,
+        x: Math.random() * 800,
         y: Math.random() * 500,
-        _s: 0.5 + Math.random() * 0.3,
-        scale: 0.5 + Math.random() * 0.3,
+        width: 15,
+        height: 30,
+        // _s: 0.5 + Math.random() * 0.3,
+        _s: 0.5, // all the same size
+        scale: 0.5 + Math.random() * 0.4,
         rotation: 0,
       }))
     }
   }
 
   componentDidMount() {
-    const padding = 100
+    const padding = 100;
 
     this.bounds = new PIXI.Rectangle(
       -padding,
@@ -129,6 +186,8 @@ const Batch = withPixiApp(class extends React.PureComponent {
             y: item.y + Math.cos(item.direction) * (item.speed * item._s),
             rotation: -item.direction + Math.PI,
             direction: item.direction + item.turningSpeed * 0.01,
+            width: item.width,
+            height: item.height
           }
 
           if (newItem.x < this.bounds.x) {
@@ -143,6 +202,18 @@ const Batch = withPixiApp(class extends React.PureComponent {
             newItem.y -= this.bounds.height
           }
 
+          // inefficient experiment - loop through ALL other bugs to test for collision
+          // should at least limit test by reasonable proximity
+          items.map(other => {
+            // don't test against self, based on old value
+            if(item.x != other.x && item.y != other.y) {
+              if(hitTestRectangle(newItem, other)) {
+                // console.log("hit!");
+                newItem.tint = Math.random() * 0xFA8072;
+              }  
+            }
+          });
+                    
           return { ...item, ...newItem }
         })
       })
@@ -171,11 +242,11 @@ class World extends Component {
 
   render() {
     return (
-      <Stage width={500} height={500} options={{ backgroundColor: 0xeef1f5 }}>
+      <Stage width={800} height={500} options={{ backgroundColor: 0xeef1f5 }}>
         <Settings>
           {config => (
             <ParticleContainer properties={config}>
-              <Batch count={config.maggots} component={Maggot} />
+              <Batch count={config.bugs} component={Bug}component={Bug} />
             </ParticleContainer>
           )}
         </Settings>
