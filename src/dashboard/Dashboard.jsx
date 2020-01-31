@@ -6,17 +6,17 @@ import CardContent from '@material-ui/core/CardContent';
 
 // custom components
 import World from '../world/World';
-import Physics from '../logic/Physics';
+// import Physics from '../logic/Physics';
 
 // icons
-import PlayIcon from '@material-ui/icons/PlayCircleFilledTwoTone';
-import PauseIcon from '@material-ui/icons/PauseCircleFilledTwoTone';
-import ChartIcon from '@material-ui/icons/AssessmentTwoTone';
+// import PlayIcon from '@material-ui/icons/PlayCircleFilledTwoTone';
+// import PauseIcon from '@material-ui/icons/PauseCircleFilledTwoTone';
+// import ChartIcon from '@material-ui/icons/AssessmentTwoTone';
 
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 600,
+    maxWidth: 800,
     maxHeight: 500,
     margin: 5,
     display: 'flex',
@@ -38,7 +38,7 @@ function Dashboard () {
 
   // using React hooks - in place of componentDidMount()
   useEffect(() => {
-    Physics.gameLoop();
+    // Physics.gameLoop();
   });
 
   // hujacking dashboard for 'world' for now - can create custom menus later
@@ -55,15 +55,15 @@ function Dashboard () {
         </Card>
         <Card className={classes.card}>
           {/* <World width={classes.card.maxWidth} height={classes.card.maxHeight}/> */}
-          <World width={500} height={500} />
+          <World width={800} height={500} />
         </Card>
-        <Card className={classes.card}>
+        {/* <Card className={classes.card}>
           <CardContent>
             <PlayIcon fontSize="large" />
             <PauseIcon fontSize="large" />
             <ChartIcon fontSize="large" />
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     );
 
