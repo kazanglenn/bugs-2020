@@ -126,7 +126,14 @@ const Bug = props => (
     image={bug}
     anchor={0.5}
     overwriteProps={true}
-    ignoreEvents={true} />
+    ignoreEvents={true} 
+    interactive={true}
+    pointerdown={() => { // respond to click
+      // TODO - create a popup or something on screen - this is to browser console
+      console.log(props)
+      // render()
+    }}   
+  />
 );
 
 // for algae positioning on birth
@@ -202,11 +209,11 @@ const Batch = withPixiApp(class extends React.PureComponent {
     // create bugs array
     var bugs = [...Array(nextProps.count)].map(() => ({
       type: "bug",
-      speed: (2 + Math.random() * 4) * 0.4,
+      speed: Math.ceil((2 + Math.random() * 4) * 0.5),
       offset: Math.random() * 100,
       turningSpeed: Math.random() - 0.8,
       direction: Math.random() * Math.PI * 2,
-      tint: Math.random() * 0xFFFFFF,
+      tint: Math.round(Math.random() * 0xFFFFFF),
       x: Math.random() * 800,
       y: Math.random() * 500,
       _s: 0.5, // all the same size
@@ -215,7 +222,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
       // w/h only for collision detection
       width: 16,
       height: 30,
-      energy: 400, // this is getting into gamification
+      energy: 400,
       breedThreshold: Math.floor(Math.random() * 1000) + 1000
     }));
 
@@ -246,6 +253,10 @@ const Batch = withPixiApp(class extends React.PureComponent {
     this.props.app.ticker.remove(this.tick)
   }
 
+  display(bug) {
+    console.log(bug);
+  }
+
   // remove items without energy - 'deaths'
   deaths = (items) => {
     items.forEach((item, i) => {
@@ -268,7 +279,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
     // ALGAE PROCESSING
     algae.forEach((item, i) => {
       // BREED
-      if(item.energy >= 100 && algae.length <= 800) {
+      if(item.energy >= 100 && algae.length < 800) {
         let offspring = Object.assign({}, item); // empty object to receive contents of item
 
         let index = Math.floor(Math.random() * positions.length);
@@ -308,14 +319,14 @@ const Batch = withPixiApp(class extends React.PureComponent {
         }
       }
 
-      // EAT
-      item.energy = Math.min(100, item.energy + 1); // put a cap on energy stored
+      // PHOTOSYNTHESISE
+      item.energy = Math.min(100, item.energy + 1); // put a cap on energy stored 
     })
 
     // BUG PROCESSING
     bugs.forEach((item, i) => {
       // BREED
-      if(item.energy >= item.breedThreshold && bugs.length <= 200) {
+      if(item.energy >= item.breedThreshold && bugs.length < 200) {
         tracker.totalBugs++;
         item.energy = Math.round(item.energy/2) - 100; // half, plus breeding cost
         let offspring = Object.assign({}, item); // empty object to receive contents of item
@@ -400,14 +411,24 @@ const Batch = withPixiApp(class extends React.PureComponent {
     var algae = this.state.items.filter(item => item.type === "algae").map(props => <Algae {...props} />);
     var bugs = this.state.items.filter(item => item.type === "bug").map(props => <Bug {...props} />);
 
+    var message = 
+            "        Cycle: ".concat(tracker.ticks)
+    .concat("\n Current Bugs: ").concat(bugs.length)
+    .concat("\nCurrent Algae: ").concat(algae.length)
+    .concat("\n   Total Bugs: ").concat(tracker.totalBugs)
+    .concat("\nTotal Species: ").concat(tracker.totalSpecies);
+
     // show the 'ticks' on screen - cycle
     var text = <Text
-      text={tracker.ticks}
+      text={message}
       anchor={0}
       x={5}
       y={5}
       style={new PIXI.TextStyle({
-        fontSize: 12
+        fontSize: 12,
+        fontFamily: 'Courier',
+        fontWeight: 'bold',
+        fill: '#ff0000'
       })}
     />
 
