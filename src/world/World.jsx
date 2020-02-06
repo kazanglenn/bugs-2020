@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Stage, ParticleContainer, Container, withPixiApp, Sprite, PropTypes } from '@inlet/react-pixi';
+import { Stage, ParticleContainer, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
 import * as PIXI from "pixi.js";
 // import './World.scss';
 
@@ -397,16 +397,21 @@ const Batch = withPixiApp(class extends React.PureComponent {
   }
 
   render() {
-    // const Comp = this.props.component;
-    // return this.state.items.map(props => <Comp {...props} />);
     var algae = this.state.items.filter(item => item.type === "algae").map(props => <Algae {...props} />);
     var bugs = this.state.items.filter(item => item.type === "bug").map(props => <Bug {...props} />);
-    
-    // TODO - add tick as text item
-    // var ticks = 
 
-    return [...algae, ...bugs];
-    // return algae.concat(bugs);
+    // show the 'ticks' on screen - cycle
+    var text = <Text
+      text={tracker.ticks}
+      anchor={0}
+      x={5}
+      y={5}
+      style={new PIXI.TextStyle({
+        fontSize: 12
+      })}
+    />
+
+    return [...algae, ...bugs, text];
   }
 });
 
@@ -432,7 +437,7 @@ class World extends Component {
           <Container properties={config}>
             <Batch count={config.bugs} algae={config.algae}/>
           </Container>
-        )}
+          )}
         </Settings>
       </Stage>
     )
