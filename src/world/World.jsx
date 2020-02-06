@@ -1,11 +1,19 @@
 import React, { Component } from 'react';
-import { Stage, ParticleContainer, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
+import { Stage, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
 import * as PIXI from "pixi.js";
+import uuidv4 from 'uuid/v4';
 // import './World.scss';
 
 // TODO - use assets folder
 const bug = '/flatworm.png';
 const algae = '/algae_small.png';
+
+// TODO - create set of configurable variables, allow modification from UI to experiment
+const globals = {
+  maxBugs: 200,
+  maxAlgae: 700,
+  algaeBreedThreshold: 100
+}
 
 // tracker, for stats
 // TODO - should this be state?
@@ -75,7 +83,8 @@ function contact(r1, r2) {
 * -----------------------------------------------
 */
 const config = {
-  bugs: 10,
+  // these are starting values
+  bugs: 20,
   algae: 600, // max = 800
 
   properties: {
@@ -164,29 +173,16 @@ const Batch = withPixiApp(class extends React.PureComponent {
   bounds = null
   state = { 
     items: [], 
-    count: 0, 
-    // component: null,
-    tracker: {
-      ticks: 0,
-      totalBugs: 10, // init value
-      totalSpecies: 10 // init value
-    }    
+    count: 0
   };
-
-  // static propTypes = {
-  //   count: PropTypes.number.isRequired,
-  //   component: PropTypes.func.isRequired,
-  // }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     // use count for algae and bugs - so *2 for comparison
-    // if (prevState.count === nextProps.count+nextProps.algae && prevState.component === nextProps.component) {
     if (prevState.count === nextProps.count + nextProps.algae) {
-    // if (prevState.count === nextProps.count && prevState.component === nextProps.component) {
         return prevState
     }
 
-    // create array of algae
+    // create initial array of algae
     var algae = [...Array(nextProps.algae)].map(() => ({
       type: "algae",
       speed: 0,
@@ -206,7 +202,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
 
     // var algae = [];
 
-    // create bugs array
+    // create initial bug array
     var bugs = [...Array(nextProps.count)].map(() => ({
       type: "bug",
       speed: Math.ceil((2 + Math.random() * 4) * 0.5),
@@ -223,7 +219,14 @@ const Batch = withPixiApp(class extends React.PureComponent {
       width: 16,
       height: 30,
       energy: 400,
-      breedThreshold: Math.floor(Math.random() * 1000) + 1000
+      cycles: 0, // track age in cycls
+      breedThreshold: Math.floor(Math.random() * 1000) + 1000,
+      // info to allow geneology reports
+      geneology: {
+        id: uuidv4(),
+        parent: 'SEED', // track parent - this is initial SEED
+        children: [] // empty to start
+      }
     }));
 
     // unit into common 'items' list
@@ -279,7 +282,8 @@ const Batch = withPixiApp(class extends React.PureComponent {
     // ALGAE PROCESSING
     algae.forEach((item, i) => {
       // BREED
-      if(item.energy >= 100 && algae.length < 800) {
+      // TODO - limit to edge algae, or perhaps sample pop if large, to speed processing
+      if(item.energy >= 100 && algae.length < 700) {
         let offspring = Object.assign({}, item); // empty object to receive contents of item
 
         let index = Math.floor(Math.random() * positions.length);
@@ -331,6 +335,18 @@ const Batch = withPixiApp(class extends React.PureComponent {
         item.energy = Math.round(item.energy/2) - 100; // half, plus breeding cost
         let offspring = Object.assign({}, item); // empty object to receive contents of item
         offspring.direction = Math.random() * Math.PI * 2; // new heading
+        // geneology tracking
+        // TODO - fix this, values being duplicated
+        let uuid = uuidv4();
+        item.geneology.children.push(uuid);
+        // object.assign does not do a deep copy
+        offspring.geneology = {
+          id: uuid,
+          parent: item.geneology.id,
+          children: [] // create blank array for child
+        }
+        offspring.cycles = 0;
+        // 'mutations'
         if(Math.floor(Math.random() * 10) === 0) {  // 1 in n chance of a mutuation
           tracker.totalSpecies++;
           offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
@@ -366,6 +382,9 @@ const Batch = withPixiApp(class extends React.PureComponent {
 
       // ENERGY LOSS
       item.energy = Math.max(0, item.energy - (2 + Math.ceil(item.speed))); // slow energy loss with movement, will need to eat
+
+      // TRACK AGE
+      item.cycles++;
     })
 
     return bugs.concat(algae);
@@ -425,10 +444,10 @@ const Batch = withPixiApp(class extends React.PureComponent {
       x={5}
       y={5}
       style={new PIXI.TextStyle({
-        fontSize: 12,
+        fontSize: 14,
         fontFamily: 'Courier',
         fontWeight: 'bold',
-        fill: '#ff0000'
+        fill: '#000080'
       })}
     />
 
