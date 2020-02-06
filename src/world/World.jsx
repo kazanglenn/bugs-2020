@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { Stage, ParticleContainer, withPixiApp, Sprite, PropTypes } from '@inlet/react-pixi';
+import { Stage, ParticleContainer, Container, withPixiApp, Sprite, PropTypes } from '@inlet/react-pixi';
 import * as PIXI from "pixi.js";
 // import './World.scss';
 
 // TODO - use assets folder
-const bug = '/bug_white.png';
-const algae = '/algae.png';
+const bug = '/flatworm.png';
+const algae = '/algae_small.png';
 
 // see https://github.com/kittykatattack/learningPixi#the-hittestrectangle-function
 function contact(r1, r2) {
@@ -68,7 +68,7 @@ function contact(r1, r2) {
 */
 const config = {
   bugs: 10,
-  algae: 200,
+  algae: 500,
 
   properties: {
     position: true,
@@ -122,7 +122,9 @@ const Bug = props => (
 );
 
 // for algae positioning on birth
-const positions = [[-15,-15],[-15,0],[15,15],[0,-15],[0,15],[15,-15],[15,0],[15,15]];
+// TODO - use PI to derive angle rathen than pseudo grid system here
+// const positions = [[-15,-15],[-15,0],[15,15],[0,-15],[0,15],[15,-15],[15,0],[15,15]];
+const positions = [[-12,-12],[-12,0],[12,12],[0,-12],[0,12],[12,-12],[12,0],[12,12]];
 
 /**
 * -----------------------------------------------
@@ -199,7 +201,8 @@ const Batch = withPixiApp(class extends React.PureComponent {
       // w/h only for collision detection
       width: 16,
       height: 30,
-      energy: 200 // this is getting into gamification
+      energy: 400, // this is getting into gamification
+      breedThreshold: Math.floor(Math.random() * 1000) + 1000
     }));
 
     // unit into common 'items' list
@@ -213,7 +216,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
   }
 
   componentDidMount() {
-    const padding = 20;
+    const padding = 10; // 20
 
     this.bounds = new PIXI.Rectangle(
       -padding,
@@ -229,6 +232,18 @@ const Batch = withPixiApp(class extends React.PureComponent {
     this.props.app.ticker.remove(this.tick)
   }
 
+  // remove items without energy - 'deaths'
+  // deaths = (items) => {
+  //   items.forEach((item, i) => {
+  //     // check if still has energy
+  //     if(item.energy === 0) {
+  //       items.splice(i, 1); // other is at position i
+  //       // console.log(item.type,"death");
+  //     }
+  //   });
+  //   return items;
+  // }
+
   // TODO - deconstruct into smaller functions
   logic = (items) => {
     // TODO - reseed algae
@@ -243,25 +258,32 @@ const Batch = withPixiApp(class extends React.PureComponent {
       else {
 
         // check if enough energy for bug to breed, artifical break on population
-        if(item.type === "bug" && item.energy >= 1000 && items.filter(item => item.type == "bug").length <= 200) {
-          item.energy = Math.round(item.energy/2) - 25; // half, plus breeding cost
-          var offspring = Object.assign({}, item); // empty object to receive contents of item
-          offspring.speed = (2 + Math.random() * 6) * 0.5;
-          offspring.turningSpeed = Math.random() - 0.8;
+        if(item.type === "bug" && item.energy >= item.breedThreshold && items.filter(item => item.type === "bug").length <= 200) {
+          item.energy = Math.round(item.energy/2) - 100; // half, plus breeding cost
+          let offspring = Object.assign({}, item); // empty object to receive contents of item
+          // offspring.speed = (2 + Math.random() * 6) * 0.5; // keep same speed unless mutation
           offspring.direction = Math.random() * Math.PI * 2; // new heading
+          // 1 in n chance of a mutuation
+          if(Math.floor(Math.random() * 30) === 0) {
+            // TODO - make this an adjustment from parent values
+            offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
+            offspring.speed = item.speed + Math.floor(Math.random() * 3); // (1 + Math.random() * 10) * 0.5; // new speed
+            offspring.tint = Math.random() * 0xFFFFFF; // new colour to indicate change
+            offspring.breedThreshold += item.breedThreshold + Math.floor(Math.random() * 50) - 25; // variable breed speed, up or down
+          }
           items.push(offspring); // add adjusted copy
           // console.log(item.type,"birth");
         }
 
         // algae breed - if energy doubled, split
-        if(item.type === "algae" && item.energy >= 10 && items.filter(item => item.type == "algae").length <= 500) {
+        if(item.type === "algae" && item.energy >= 100 && items.filter(item => item.type === "algae").length <= 800) {
           item.energy = Math.round(item.energy/2); // half
-          var offspring = Object.assign({}, item); // empty object to receive contents of item
-          // TODO - may need to check in bounds
-          // TODO - better positioning, avoid overlap
-          var index = Math.floor(Math.random() * positions.length);
-          offspring.x += positions[index][0] + Math.floor(Math.random() * 60) - 30;
-          offspring.y += positions[index][1] + Math.floor(Math.random() * 60) - 30;
+          let offspring = Object.assign({}, item); // empty object to receive contents of item
+
+          let index = Math.floor(Math.random() * positions.length);
+          // was 60 - 30
+          offspring.x += positions[index][0] + Math.floor(Math.random() * 8) - 4;
+          offspring.y += positions[index][1] + Math.floor(Math.random() * 8) - 4;
 
           // can push this into a function - used for bugs as well
           if (offspring.x < this.bounds.x) {
@@ -275,10 +297,28 @@ const Batch = withPixiApp(class extends React.PureComponent {
           }
           else if (offspring.y > this.bounds.y + this.bounds.height) {
             offspring.y -= this.bounds.height;
-          }          
+          }
+
+          // TODO - get this overlap check to work
           
-          items.push(offspring); // add adjusted copy
-          // console.log(item.type,"birth");
+          // check overlap - if overlap, do not breed (do no add offpsring) until space
+          // var isContact = items.filter(inner => inner.type === "algae").some((algae) => {
+          //   contact(offspring, algae);
+          // })
+          let isContact = false;
+          let algae = items.filter(inner => inner.type === "algae");
+          for(i = 0; i < algae.length; i++) { // don't use foreach so can break
+            if(contact(offspring, algae[i])) {
+              // console.log("contact", i, algae.length, offspring, algae[i])
+              isContact = true;
+              break;
+            }
+          }
+          
+          if(!isContact) {
+            items.push(offspring); // add adjusted copy
+            // console.log(item.type,"birth");  
+          }
         }
 
         // check if bug has contact with others, when can take energy from them
@@ -305,7 +345,8 @@ const Batch = withPixiApp(class extends React.PureComponent {
 
         // simulate photosynthesis; algae gather energy slowly from environment
         if(item.type === "algae") {
-          item.energy += 1; 
+          // item.energy += 1; 
+          item.energy = Math.min(100, item.energy + 1); // put a cap on energy stored
         }
 
         // TODO - work out why coord changes here work but not in tick
@@ -316,7 +357,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
           item.rotation = -item.direction + Math.PI;
           item.direction = item.direction + item.turningSpeed * (Math.random() - 0.5) * 0.5;
             // speed impacts energy loss rate, slower = lower
-          item.energy = Math.max(0, item.energy - 1 - Math.floor(item.speed)); // slow energy loss with movement, will need to eat
+          item.energy = Math.max(0, item.energy - (1 + Math.ceil(item.speed*2))); // slow energy loss with movement, will need to eat
         }
 
         // // check bounds of environment not exceeded, wrap around if so
@@ -341,108 +382,6 @@ const Batch = withPixiApp(class extends React.PureComponent {
   }
 
   tick = () => {
-    // this.setState(
-    //   ({ items }) => ({
-
-    //     // update bug array for births/deaths
-    //     items: items.forEach((item, i) => {
-
-    //       // bug has run out of energy, death ... remove item from array
-    //       if(item.energy === 0) {
-    //         items.splice(i, 1); // other is at position i
-    //         console.log("death");
-    //         return { ...item };
-    //       }
-
-    //       // breed bugs - quick test, artifical break at 500 on population, stops runaway growth
-    //       // TODO - use filters, this is a mess
-    //       if(item.type === "bug" && item.energy >= 1200 && items.length <= 300) {
-    //         item.energy = item.energy / 2 - 25; // half, plus breeding cost
-
-    //         let baby = Object.assign({}, item); // empty object to receive contents of item
-    //         baby.speed = (2 + Math.random() * 4) * 0.4;
-    //         baby.turningSpeed = Math.random() - 0.8;
-    //         baby.direction = Math.random() * Math.PI * 2; // new heading
-
-    //         items.push(baby); // add adjusted copy
-    //         console.log("birth");
-    //       }
-    //     }),
-
-    //     // items: items.filter(item => item.type === "algae").map((item, i) => {},
-
-    //     // bug movement, filter out algae
-    //     // items: items.filter(item => item.type === "bug").map((item, i) => {
-    //     items: items.map((item, i) => {
-
-    //       let newItem = {
-    //         // scale: item._s + Math.sin(this.time * item._s) * 0.25,
-    //         scale: item.scale, // same
-    //         x: item.x + Math.sin(item.direction) * (item.speed * item._s),
-    //         y: item.y + Math.cos(item.direction) * (item.speed * item._s),
-    //         rotation: -item.direction + Math.PI,
-    //         // direction: item.direction + item.turningSpeed * 0.01,
-    //         // this is where the logic can go - random adjustments for now
-    //         direction: item.direction + item.turningSpeed * (Math.random() - 0.5) * 0.5,
-    //         width: item.width,
-    //         height: item.height,
-    //         // this is where the logic can go - random adjustments for now
-    //         // TODO - factor speed into energy loss rate, slower = lower
-    //         // if(item.type === "bug") {
-    //           energy: Math.max(0, item.energy -1) // slow energy loss, will need to eat
-    //           // energy: Math.max(0, item.energy) // leave energy loss to breeding only
-  
-    //         // }
-    //       }
-
-    //       if (newItem.x < this.bounds.x) {
-    //         newItem.x += this.bounds.width
-    //       } else if (newItem.x > this.bounds.x + this.bounds.width) {
-    //         newItem.x -= this.bounds.width
-    //       }
-
-    //       if (newItem.y < this.bounds.y) {
-    //         newItem.y += this.bounds.height
-    //       } else if (newItem.y > this.bounds.y + this.bounds.height) {
-    //         newItem.y -= this.bounds.height
-    //       }
-
-    //       // inefficient experiment - loop through ALL other bugs to test for collision
-    //       // should at least limit test by reasonable proximity
-    //       // items.map(other => {
-    //       //   // don't test against self, based on position of old value
-    //       //   if(item.tint !== other.tint && item.x !== other.x && item.y !== other.y) {
-    //       //     if(hitTestRectangle(newItem, other)) {
-    //       //       // TODO - switch to bump library, more sophisticated contact detection
-    //       //       newItem.direction += (Math.random() - 0.5) * 0.5; // avoidance, irrelevant for algae
-    //       //       // consume the contacted bug
-    //       //       if(other.energy > 0) {
-    //       //         newItem.energy += 5;
-    //       //         other.energy = Math.max(0, other.energy-5);
-    //       //       }
-    //       //     }  
-    //       //   }
-    //       // });
-                    
-    //       return { ...item, ...newItem }
-    //     })
-    //   })
-    // )
-
-    // all three patterns work but do not re-render items
-
-    // this.setState({
-    //   items: this.logic(this.state.items)
-    // });
-
-    // this.setState((state, props) => ({
-    //   items: this.logic(state.items)
-    // }));    
-
-    // shorthand for state.items
-    // this.setState(({ items }) => ({
-    //   items: this.logic(items)
-    // }));
 
     this.setState(({ items }) => ({
       items: this.logic(items).map((item, i) => {
@@ -460,14 +399,6 @@ const Batch = withPixiApp(class extends React.PureComponent {
         // }
 
         if(newItem.type === "bug") {
-
-          // // move the item; this is where logic can go - random adjustments for now
-          // newItem.x += Math.sin(item.direction) * (item.speed * item._s);
-          // newItem.y += Math.cos(item.direction) * (item.speed * item._s);
-          // newItem.rotation += -item.direction + Math.PI;
-          // newItem.direction += item.direction + item.turningSpeed * (Math.random() - 0.5) * 0.5;
-          //   // TODO - factor speed into energy loss rate, slower = lower
-          // newItem.energy = Math.max(0, item.energy -1); // slow energy loss with movement, will need to eat
 
           // check bounds of environment not exceeded, wrap around if so
           if (newItem.x < this.bounds.x) {
@@ -508,7 +439,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
 * Top Level World Component
 * -----------------------------------------------
 */
-class World extends Component {
+class World extends Component { 
   constructor(props) {
     super(props);
     this.state = {}
@@ -517,15 +448,15 @@ class World extends Component {
   // TODO - track and display elapsed time - cycles?
 
   render() {
+    // 0x72786e
     return (
-      <Stage width={800} height={500} options={{ backgroundColor: 0xdfe6e8 }}>
+      <Stage width={800} height={500} options={{ backgroundColor: 0x999ca3 }}>
         <Settings>
           {config => (
-            <ParticleContainer properties={config}>
-              {/* <Batch count={config.bugs} component={Bug}/> */}
-              <Batch count={config.bugs} algae={config.algae}/>
-            </ParticleContainer>
-          )}
+          <Container properties={config}>
+            <Batch count={config.bugs} algae={config.algae}/>
+          </Container>
+        )}
         </Settings>
       </Stage>
     )
