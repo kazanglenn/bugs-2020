@@ -8,22 +8,58 @@ import uuidv4 from 'uuid/v4';
 const bug = '/flatworm.png';
 const algae = '/algae_small.png';
 
-// TODO - create set of configurable variables, allow modification from UI to experiment
+/**
+* -----------------------------------------------
+* Global constants
+* -----------------------------------------------
+*/
 const globals = {
   maxBugs: 200,
   maxAlgae: 700,
-  algaeBreedThreshold: 100
+  algaeBreedThreshold: 100,
+  breedingCost: 100
 }
 
-// tracker, for stats
-// TODO - should this be state?
+/**
+* -----------------------------------------------
+* tracker, for stats
+* TODO - should this be state?
+* -----------------------------------------------
+*/
 var tracker = {
   ticks: 0,
   totalBugs: 10, // init value
   totalSpecies: 10 // init value
 }
 
-// see https://github.com/kittykatattack/learningPixi#the-hittestrectangle-function
+/**
+* -----------------------------------------------
+* Config
+* -----------------------------------------------
+*/
+const config = {
+  // these are starting values
+  bugs: 10,
+  algae: 400, // max = 800
+
+  properties: {
+    position: true,
+    rotation: true,
+    scale: false,
+    uvs: false,
+    alpha: false,
+  },
+
+  listeners: [],
+  onChange: function (prop, val) { this.listeners.forEach(l => l(prop, val)) },
+}
+
+/**
+* -----------------------------------------------
+* Contact function - have two sprites connected?  
+* see https://github.com/kittykatattack/learningPixi#the-hittestrectangle-function
+* -----------------------------------------------
+*/
 function contact(r1, r2) {
 
   //Define the variables we'll need to calculate
@@ -76,28 +112,6 @@ function contact(r1, r2) {
   //`hit` will be either `true` or `false`
   return hit;
 };
-
-/**
-* -----------------------------------------------
-* Config
-* -----------------------------------------------
-*/
-const config = {
-  // these are starting values
-  bugs: 20,
-  algae: 600, // max = 800
-
-  properties: {
-    position: true,
-    rotation: true,
-    scale: false,
-    uvs: false,
-    alpha: false,
-  },
-
-  listeners: [],
-  onChange: function (prop, val) { this.listeners.forEach(l => l(prop, val)) },
-}
 
 /**
 * -----------------------------------------------
@@ -176,6 +190,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
     count: 0
   };
 
+  // see https://larry-price.com/blog/2018/06/27/how-to-use-getderivedstatefromprops-in-react-16-dot-3-plus/
   static getDerivedStateFromProps(nextProps, prevState) {
     // use count for algae and bugs - so *2 for comparison
     if (prevState.count === nextProps.count + nextProps.algae) {
@@ -185,19 +200,11 @@ const Batch = withPixiApp(class extends React.PureComponent {
     // create initial array of algae
     var algae = [...Array(nextProps.algae)].map(() => ({
       type: "algae",
-      speed: 0,
-      offset: Math.random() * 100,
-      turningSpeed: 0,
-      direction: 0,
       x: Math.random() * 800,
       y: Math.random() * 500,
-      _s: 0.5, // all the same size
-      scale: 0.5,
-      rotation: 0,
-      // w/h only for collision detection
       width: 15,
       height: 15,
-      energy: Math.floor(Math.random() * 50) + 50 // spread values, avoid all breeding together
+      energy: Math.floor(Math.random() * 50) + 50 // spread initial values, avoid all breeding together
     }));
 
     // var algae = [];
@@ -206,14 +213,13 @@ const Batch = withPixiApp(class extends React.PureComponent {
     var bugs = [...Array(nextProps.count)].map(() => ({
       type: "bug",
       speed: Math.ceil((2 + Math.random() * 4) * 0.5),
-      offset: Math.random() * 100,
+      // offset: Math.random() * 100,
       turningSpeed: Math.random() - 0.8,
       direction: Math.random() * Math.PI * 2,
       tint: Math.round(Math.random() * 0xFFFFFF),
       x: Math.random() * 800,
       y: Math.random() * 500,
-      _s: 0.5, // all the same size
-      scale: 0.5,
+      _s: 0.6, // base speed - could add to globals
       rotation: 0,
       // w/h only for collision detection
       width: 16,
@@ -234,8 +240,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
 
     return {
       items: items,
-      count: items.length,
-      component: nextProps.component
+      count: items.length
     }
   }
 
@@ -283,7 +288,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
     algae.forEach((item, i) => {
       // BREED
       // TODO - limit to edge algae, or perhaps sample pop if large, to speed processing
-      if(item.energy >= 100 && algae.length < 700) {
+      if(item.energy >= globals.algaeBreedThreshold && algae.length < globals.maxAlgae) {
         let offspring = Object.assign({}, item); // empty object to receive contents of item
 
         let index = Math.floor(Math.random() * positions.length);
@@ -330,9 +335,9 @@ const Batch = withPixiApp(class extends React.PureComponent {
     // BUG PROCESSING
     bugs.forEach((item, i) => {
       // BREED
-      if(item.energy >= item.breedThreshold && bugs.length < 200) {
+      if(item.energy >= item.breedThreshold && bugs.length < globals.maxBugs) {
         tracker.totalBugs++;
-        item.energy = Math.round(item.energy/2) - 100; // half, plus breeding cost
+        item.energy = Math.round(item.energy/2) - globals.breedingCost; // half, plus breeding cost
         let offspring = Object.assign({}, item); // empty object to receive contents of item
         offspring.direction = Math.random() * Math.PI * 2; // new heading
         // geneology tracking
@@ -364,11 +369,11 @@ const Batch = withPixiApp(class extends React.PureComponent {
           if(contact(item, other)) {
             // TODO - switch to bump library, more sophisticated contact detection
             // TODO - avoid overlap
-            item.direction += (Math.random() - 0.5) * 0.5; // avoidance, irrelevant for algae
+            item.direction += (Math.random() - 0.5) * 0.75; // avoidance, irrelevant for algae
             // consume the contacted bug or algae
             if(other.energy > 0) {
-              item.energy += Math.min(20, other.energy); // take what there is, or 20
-              other.energy = Math.max(0, other.energy - 20); // reduce to 0, or by 20
+              item.energy += Math.min(100, other.energy); // take what ther
+              other.energy = Math.max(0, other.energy - 100); // reduce to 0, or by 100, so eat algae in one go - faster
             }
           }
         }
