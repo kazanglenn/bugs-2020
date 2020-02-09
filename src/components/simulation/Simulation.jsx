@@ -14,24 +14,17 @@ const algae = '/algae_small.png';
 * Component styles
 * -----------------------------------------------
 */
-// const styles = {
-//   card: {
-//     maxWidth: 800,
-//     maxHeight: 500,
-//     margin: 5,
-//     display: 'flex',
-//     flexDirection: 'row'
-//   }
-// };
-
 const useStyles = makeStyles({
-  card: {
+  card: props => ({
     maxWidth: 800,
     maxHeight: 500,
+    // TODO - fix this, use props, should work, see https://material-ui.com/styles/basics/
+    // maxWidth: props.width,
+    // maxHeight: props.height,
     margin: 5,
     display: 'flex',
     flexDirection: 'row'
-  }
+  })
 });
 
 /**
@@ -506,28 +499,18 @@ const Batch = withPixiApp(class extends React.PureComponent {
 * Top Level World Component
 * -----------------------------------------------
 */
-// class World extends Component { 
-//   constructor(props) {
-//     super(props);
-//     this.state = {}
-//   }
+function Simulation (props) {  
 
-function Simulation () {  
+  const classes = useStyles(props);
 
-  const classes = useStyles();
-
-  // TODO - track and display elapsed time - cycles?
-  // colours - see https://www.w3schools.com/colors/colors_names.asp
-  // render() {
-    
     return (
       <Card className={classes.card}>
-        <Stage width={800} height={500} options={{ backgroundColor: 0xF5F5F5 }}>
+        <Stage width={props.width} height={props.height} options={{ backgroundColor: props.background }}>
           <Settings>
             {config => (
-            <Container properties={config}>
-              <Batch count={config.bugs} algae={config.algae}/>
-            </Container>
+              <Container properties={config}>
+                <Batch count={config.bugs} algae={config.algae}/>
+              </Container>
             )}
           </Settings>
         </Stage>

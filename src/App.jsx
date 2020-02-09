@@ -26,7 +26,7 @@ class App extends Component {
       <div className="App">
         <ThemeProvider theme={theme}>
           <Title/>
-          <Simulation/>
+          <Simulation width="800" height="500" background="0xC5C5C5" id="SIM1"/>
         </ThemeProvider>
       </div>
     );
