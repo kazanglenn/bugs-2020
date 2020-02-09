@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Admin, Resource, ListGuesser } from 'react-admin';
-import jsonServerProvider from 'ra-data-json-server';
+import { ThemeProvider } from '@material-ui/styles';
 
 // icons
 import DashboardIcon from '@material-ui/icons/DashboardTwoTone';
@@ -12,7 +11,8 @@ import WorldIcon from '@material-ui/icons/PublicTwoTone';
 import { createMuiTheme } from '@material-ui/core/styles';
 
 // custom components
-import { Dashboard } from './dashboard';
+import { Title } from './components/title';
+import { Simulation } from './components/simulation';
 
 const theme = createMuiTheme({
   palette: {
@@ -20,16 +20,14 @@ const theme = createMuiTheme({
   }
 });
 
-const dataProvider = jsonServerProvider('http://jsonplaceholder.typicode.com');
-
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <Admin theme={theme} dashboard={Dashboard} dataProvider={dataProvider}>
-          <Resource name="users" list={ListGuesser} icon={UserIcon}/>
-          <Resource name="bugs" icon={BugIcon}/> 
-        </Admin>
+        <ThemeProvider theme={theme}>
+          <Title/>
+          <Simulation/>
+        </ThemeProvider>
       </div>
     );
   }

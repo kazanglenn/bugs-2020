@@ -1,12 +1,38 @@
 import React, { Component } from 'react';
+import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
 import { Stage, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
 import * as PIXI from "pixi.js";
 import uuidv4 from 'uuid/v4';
-// import './World.scss';
 
 // TODO - use assets folder
 const bug = '/flatworm.png';
 const algae = '/algae_small.png';
+
+/**
+* -----------------------------------------------
+* Component styles
+* -----------------------------------------------
+*/
+// const styles = {
+//   card: {
+//     maxWidth: 800,
+//     maxHeight: 500,
+//     margin: 5,
+//     display: 'flex',
+//     flexDirection: 'row'
+//   }
+// };
+
+const useStyles = makeStyles({
+  card: {
+    maxWidth: 800,
+    maxHeight: 500,
+    margin: 5,
+    display: 'flex',
+    flexDirection: 'row'
+  }
+});
 
 /**
 * -----------------------------------------------
@@ -17,7 +43,8 @@ const globals = {
   maxBugs: 200,
   maxAlgae: 700,
   algaeBreedThreshold: 100,
-  breedingCost: 100
+  breedingCost: 100,
+  sampleInterval: 100 // number of ticks before counting species
 }
 
 /**
@@ -29,7 +56,8 @@ const globals = {
 var tracker = {
   ticks: 0,
   totalBugs: 10, // init value
-  totalSpecies: 10 // init value
+  totalSpecies: 10, // init value
+  chartData: []
 }
 
 /**
@@ -280,7 +308,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
   // TODO - deconstruct into smaller functions
   logic = (items) => {
     // build arrays once
-    var all = this.deaths(items); // check once over all items
+    var all = this.deaths(items); // first, check once over all items, remove any with 0 energy
     var algae = all.filter(item => item.type === "algae");
     var bugs = all.filter(item => item.type === "bug");
 
@@ -427,7 +455,20 @@ const Batch = withPixiApp(class extends React.PureComponent {
     }));
 
     tracker.ticks++;
-    // this.setState(tracker.ticks++);
+    // every nth tick, record bug volumes by species - not too oftem, will slow processing
+    if(tracker.ticks % globals.sampleInterval === 0) {
+      // TODO - find efficient way
+      let sample = {
+        cycle: tracker.ticks,
+        items: this.state.items.length,
+        bugs: this.state.items.filter(i => i.type === "bug").length,
+        algae: this.state.items.filter(i => i.type === "algae").length
+      }
+      // TODO - cap size here? pop from front if > than x
+      tracker.chartData.push(sample);
+      console.log(sample); // just a place holder
+    }
+
     this.time += 0.1;
   }
 
@@ -465,28 +506,35 @@ const Batch = withPixiApp(class extends React.PureComponent {
 * Top Level World Component
 * -----------------------------------------------
 */
-class World extends Component { 
-  constructor(props) {
-    super(props);
-    this.state = {}
-  }
+// class World extends Component { 
+//   constructor(props) {
+//     super(props);
+//     this.state = {}
+//   }
+
+function Simulation () {  
+
+  const classes = useStyles();
 
   // TODO - track and display elapsed time - cycles?
   // colours - see https://www.w3schools.com/colors/colors_names.asp
-  render() {
+  // render() {
     
     return (
-      <Stage width={800} height={500} options={{ backgroundColor: 0xF5F5F5 }}>
-        <Settings>
-          {config => (
-          <Container properties={config}>
-            <Batch count={config.bugs} algae={config.algae}/>
-          </Container>
-          )}
-        </Settings>
-      </Stage>
-    )
-  }
+      <Card className={classes.card}>
+        <Stage width={800} height={500} options={{ backgroundColor: 0xF5F5F5 }}>
+          <Settings>
+            {config => (
+            <Container properties={config}>
+              <Batch count={config.bugs} algae={config.algae}/>
+            </Container>
+            )}
+          </Settings>
+        </Stage>
+      </Card>
+    );
+
+  // }
 }
 
-export default World;
+export default Simulation;

@@ -4,16 +4,6 @@ import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 
-// custom components
-import World from '../world/World';
-// import Physics from '../logic/Physics';
-
-// icons
-// import PlayIcon from '@material-ui/icons/PlayCircleFilledTwoTone';
-// import PauseIcon from '@material-ui/icons/PauseCircleFilledTwoTone';
-// import ChartIcon from '@material-ui/icons/AssessmentTwoTone';
-
-
 const useStyles = makeStyles({
   card: {
     maxWidth: 800,
@@ -38,7 +28,7 @@ function Dashboard () {
 
   // using React hooks - in place of componentDidMount()
   useEffect(() => {
-    // Physics.gameLoop();
+    // TODO - or not use
   });
 
   // hujacking dashboard for 'world' for now - can create custom menus later
@@ -53,17 +43,6 @@ function Dashboard () {
           />
           <CardContent className={classes.content}>Exploring machine learning and evolutionary adaptation by observing synthetic creatures ('bugs') in a dynamic environment.</CardContent>
         </Card>
-        <Card className={classes.card}>
-          {/* <World width={classes.card.maxWidth} height={classes.card.maxHeight}/> */}
-          <World width={800} height={500} />
-        </Card>
-        {/* <Card className={classes.card}>
-          <CardContent>
-            <PlayIcon fontSize="large" />
-            <PauseIcon fontSize="large" />
-            <ChartIcon fontSize="large" />
-          </CardContent>
-        </Card> */}
       </div>
     );
 
