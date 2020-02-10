@@ -38,7 +38,7 @@ const globals = {
   maxAlgae: 700,
   algaeBreedThreshold: 100,
   breedingCost: 100,
-  sampleInterval: 100 // number of ticks before counting species
+  sampleInterval: 50 // number of ticks before counting species
 }
 
 /**
