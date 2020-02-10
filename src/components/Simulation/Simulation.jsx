@@ -1,10 +1,11 @@
 import React from 'react';
+import { connect } from "react-redux";
+import { addMeasure } from '../../redux/actions';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import { Stage, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
 import * as PIXI from "pixi.js";
 import uuidv4 from 'uuid/v4';
-import { addMeasure } from '../../actions';
 
 import BugImage from '../../assets/flatworm.png';
 import AlgaeImage from '../../assets/algae_small.png';
@@ -49,8 +50,8 @@ const globals = {
 var tracker = {
   ticks: 0,
   totalBugs: 10, // init value
-  totalSpecies: 10, // init value
-  chartData: []
+  totalSpecies: 10 // init value
+  // chartData: []
 }
 
 /**
@@ -195,7 +196,8 @@ const Algae = props => (
     image={AlgaeImage}
     anchor={0.5}
     overwriteProps={true}
-    ignoreEvents={true} />
+    ignoreEvents={true} 
+  />
 );
 
 /**
@@ -274,8 +276,8 @@ const Batch = withPixiApp(class extends React.PureComponent {
       -padding,
       -padding,
       // were being read as strings - so = 80020 not 820!
-      Number(this.props.app.screen.width) + padding * 2,
-      Number(this.props.app.screen.height) + padding * 2
+      Number(this.props.app.screen.width) + padding,
+      Number(this.props.app.screen.height) + padding
     )
 
     this.props.app.ticker.add(this.tick)
@@ -292,10 +294,8 @@ const Batch = withPixiApp(class extends React.PureComponent {
   // remove items without energy - 'deaths'
   deaths = (items) => {
     items.forEach((item, i) => {
-      // check if still has energy
       if(item.energy === 0) {
         items.splice(i, 1); // other is at position i
-        // console.log(item.type,"death");
       }
     });
     return items;
@@ -460,14 +460,13 @@ const Batch = withPixiApp(class extends React.PureComponent {
       // TODO - find efficient way
       let sample = {
         cycle: tracker.ticks,
-        items: this.state.items.length,
+        // items: this.state.items.length,
         bugs: this.state.items.filter(i => i.type === "bug").length,
         algae: this.state.items.filter(i => i.type === "algae").length
       }
       // TODO - cap size here? pop from front if > than x
-      tracker.chartData.push(sample);
-      addMeasure(sample);
-      console.log(sample); // just a place holder
+      this.props.addMeasure(sample);
+      // console.log(sample); // just a place holder
     }
 
 
@@ -512,6 +511,7 @@ function Simulation (props) {
 
   const classes = useStyles(props);
 
+    // note passing function to Batch component
     return (
       <Card className={classes.card}>
         <Stage width="800" height="500" options={{ backgroundColor: props.background }}>
@@ -519,7 +519,7 @@ function Simulation (props) {
           <Settings>
             {config => (
               <Container properties={config}>
-                <Batch count={config.bugs} algae={config.algae}/>
+                <Batch addMeasure={props.addMeasure} count={config.bugs} algae={config.algae}/>
               </Container>
             )}
           </Settings>
@@ -529,4 +529,8 @@ function Simulation (props) {
 
 }
 
-export default Simulation;
+export default connect(
+  null,
+  { addMeasure }
+)(Simulation);
+// export default Simulation;

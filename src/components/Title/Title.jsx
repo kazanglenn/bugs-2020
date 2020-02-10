@@ -28,16 +28,14 @@ function Title () {
   const classes = useStyles();
 
     return (
-      <div>
-        <Card className={classes.card}>
-          <CardMedia
-            className={classes.media}
-            image={TitleImage}
-            title="Bugs 2020"
-          />
-          <CardContent className={classes.content}>Exploring machine learning and evolutionary adaptation by observing synthetic creatures ('bugs') in a dynamic environment.</CardContent>
-        </Card>
-      </div>
+      <Card className={classes.card}>
+        <CardMedia
+          className={classes.media}
+          image={TitleImage}
+          title="Bugs 2020"
+        />
+        <CardContent className={classes.content}>Exploring machine learning and evolutionary adaptation by observing synthetic creatures ('bugs') in a dynamic environment.</CardContent>
+      </Card>
     );
 
 };
