@@ -21,11 +21,23 @@ const options = {
     xAxes: [{
       display: true,
       type: 'linear',
-      position: 'bottom'
+      position: 'bottom',
+      ticks: {
+        beginAtZero: false
+       }
     }],
-    yAxes: [{
-      display: true
-    }]      
+    yAxes: [
+      {
+        id: 'bugs',
+        position: 'left',
+        display: true
+      },
+      {
+        id: 'algae',
+        position: 'right',
+        display: true
+      }
+    ]      
   },
   legend: {
     display: true,
@@ -52,12 +64,14 @@ function Chart ({measures}) {
       {
         label: "Bugs",
         data: measures && measures.length ? measures.map((m) => {return {x: m.cycle, y: m.bugs}}) : [],
+        yAxisID: "bugs",
         borderColor: 'rgba(240, 163, 10, 0.7)',
         backgroundColor: 'rgba(240, 163, 10, 0.3)'
       },
       {
         label: "Algae",
         data: measures && measures.length ? measures.map((m) => {return {x: m.cycle, y: m.algae}}) : [],
+        yAxisID: "algae",
         borderColor: 'rgba(0, 138, 0, 0.7)',
         backgroundColor: 'rgba(0, 138, 0, 0.3)'
       }
@@ -80,7 +94,7 @@ const mapStateToProps = state => {
   // console.log(state); // working, updates per post
   // const measures = getMeasures(state); // TODO - REDUCER NOT WORKING BUT SHOULD
   const measures = state.measures; // this does work - direct access
-  // console.log(measures); // working, updates per post
+  // console.log(measures);
   return { measures };
 };
 
