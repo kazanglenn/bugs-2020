@@ -79,7 +79,8 @@ function Chart ({measures}) {
 const mapStateToProps = state => {
   // console.log(state); // working, updates per post
   // const measures = getMeasures(state); // TODO - REDUCER NOT WORKING BUT SHOULD
-  const measures = state.measures; // this does work - direct access
+  // take last 200 records
+  const measures = state.measures.slice(Math.max(state.measures.length - 200, 0)); // this does work - direct access
   // console.log(measures); // working, updates per post
   return { measures };
 };
