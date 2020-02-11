@@ -13,7 +13,8 @@ import { createMuiTheme } from '@material-ui/core/styles';
 // custom components
 import {Title} from './components/Title';
 import {Simulation} from './components/Simulation';
-import {Chart} from './components/Chart';
+import {SummaryChart} from './components/SummaryChart';
+import {SpeciesChart} from './components/SpeciesChart';
 
 const theme = createMuiTheme({
   palette: {
@@ -27,8 +28,9 @@ class App extends Component {
       <div className="App">
         <ThemeProvider theme={theme}>
           <Title/>
-          <Simulation width="800" height="500" background="0xC5C5C5"/>
-          <Chart/>
+          <Simulation width={800} height={500} background={0xC5C5C5}/>
+          <SummaryChart/>
+          <SpeciesChart/>
         </ThemeProvider>
       </div>
     );

@@ -1,4 +1,4 @@
-import { ADD_MEASURE } from "./actionTypes";
+import { ADD_MEASURE, ADD_SPECIES_COUNT } from "./actionTypes";
 
 export const addMeasure = measure => ({
   type: ADD_MEASURE,
@@ -6,4 +6,10 @@ export const addMeasure = measure => ({
     measure
   }
 });
-  
+
+export const addSpeciesCount = species => ({
+  type: ADD_SPECIES_COUNT,
+  payload: {
+    species
+  }
+});

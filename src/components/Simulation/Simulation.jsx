@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { addMeasure } from '../../redux/actions';
+import { addMeasure, addSpeciesCount } from '../../redux/actions';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import { Stage, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
@@ -380,7 +380,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
           tracker.totalSpecies++;
           offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
           offspring.speed = item.speed + Math.floor(Math.random() * 3); // (1 + Math.random() * 10) * 0.5; // new speed
-          offspring.tint = Math.random() * 0xFFFFFF; // new colour to indicate change
+          offspring.tint = Math.round(Math.random() * 0xFFFFFF); // new colour to indicate change
           offspring.breedThreshold += item.breedThreshold + Math.floor(Math.random() * 50) - 25; // variable breed speed, up or down
         }
         bugs.push(offspring); // add adjusted copy
@@ -453,22 +453,47 @@ const Batch = withPixiApp(class extends React.PureComponent {
     tracker.ticks++;
     // every nth tick, record bug volumes by species - not too oftem, will slow processing
     if(tracker.ticks % globals.sampleInterval === 0) {
-      // TODO - stop if no more items
-      if(this.state.items.filter(item => item.type === 'bug').length === 0) {
+      let bugs = this.state.items.filter(item => item.type === 'bug');
+      if(bugs.length === 0) {
+        // TODO - stop if no more items, display message, stop processing
         console.log("all bugs dead");
       }
-      // TODO - find efficient way
+
       let sample = {
         cycle: tracker.ticks,
-        // items: this.state.items.length,
-        bugs: this.state.items.filter(i => i.type === "bug").length,
+        bugs: bugs.length,
         algae: this.state.items.filter(i => i.type === "algae").length
       }
-      // TODO - cap size here? pop from front if > than x
-      this.props.addMeasure(sample);
-      // console.log(sample); // just a place holder
-    }
 
+      // TODO - cap size here? pop from front if > than x
+      // add population measures to redux store
+      this.props.addMeasure(sample);
+
+      // species counts
+      // let distinctSpecies = [...new Set(bugs.map(item => item.tint))];
+      // console.log("DISTINCT",distinctSpecies);
+
+      // count species
+      const counts = bugs.reduce((cnts, item) => {
+        let name = item.tint.toString();
+        cnts[name] = cnts[name] ? cnts[name] + 1 : 1;
+        return cnts;
+      }, Object.create(null)); // or []
+      // console.log("COUNTS",counts);
+
+      // normalise results into standard structure to make plotting easier
+      const normal = Object.keys(counts).map((name) => {
+        return {species: name, count: counts[name]}
+      });
+      // console.log("NORMAL",normal);
+
+      // wrap up results with a cycle indicator
+      const species = {cycle: tracker.ticks, counts: normal}
+      // console.log("SPECIES",species);
+
+      // add species counts to redux store
+      this.props.addSpeciesCount(species);
+    }
 
     this.time += 0.1;
   }
@@ -514,12 +539,11 @@ function Simulation (props) {
     // note passing function to Batch component
     return (
       <Card className={classes.card}>
-        <Stage width="800" height="500" options={{ backgroundColor: props.background }}>
-        {/* <Stage width={props.width} height={props.height} options={{ backgroundColor: props.background }}> */}
+        <Stage width={props.width} height={props.height} options={{ backgroundColor: props.background }}>
           <Settings>
             {config => (
               <Container properties={config}>
-                <Batch addMeasure={props.addMeasure} count={config.bugs} algae={config.algae}/>
+                <Batch addMeasure={props.addMeasure} addSpeciesCount={props.addSpeciesCount} count={config.bugs} algae={config.algae}/>
               </Container>
             )}
           </Settings>
@@ -531,6 +555,5 @@ function Simulation (props) {
 
 export default connect(
   null,
-  { addMeasure }
+  { addMeasure, addSpeciesCount }
 )(Simulation);
-// export default Simulation;

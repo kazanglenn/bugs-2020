@@ -21,10 +21,7 @@ const options = {
     xAxes: [{
       display: true,
       type: 'linear',
-      position: 'bottom',
-      ticks: {
-        beginAtZero: false
-       }
+      position: 'bottom'
     }],
     yAxes: [
       {
@@ -55,7 +52,7 @@ const options = {
   }
 }
 
-function Chart ({measures}) {
+function SummaryChart ({measures}) {
   
   const classes = useStyles();
 
@@ -65,15 +62,21 @@ function Chart ({measures}) {
         label: "Bugs",
         data: measures && measures.length ? measures.map((m) => {return {x: m.cycle, y: m.bugs}}) : [],
         yAxisID: "bugs",
-        borderColor: 'rgba(240, 163, 10, 0.7)',
-        backgroundColor: 'rgba(240, 163, 10, 0.3)'
+        borderColor: 'rgba(247, 247, 186, 0.5)',
+        backgroundColor: 'rgba(247, 247, 186, 0.3)',
+        borderWidth: 1,
+        pointRadius: 1,
+        pointHoverRadius: 1
       },
       {
         label: "Algae",
         data: measures && measures.length ? measures.map((m) => {return {x: m.cycle, y: m.algae}}) : [],
         yAxisID: "algae",
         borderColor: 'rgba(0, 138, 0, 0.7)',
-        backgroundColor: 'rgba(0, 138, 0, 0.3)'
+        backgroundColor: 'rgba(0, 138, 0, 0.3)',
+        borderWidth: 1,
+        pointRadius: 1,
+        pointHoverRadius: 1
       }
     ]
   }
@@ -94,10 +97,10 @@ const mapStateToProps = state => {
   // console.log(state); // working, updates per post
   // const measures = getMeasures(state); // TODO - REDUCER NOT WORKING BUT SHOULD
   // take last 200 records
-  const measures = state.measures.slice(Math.max(state.measures.length - 200, 0)); // this does work - direct access
-  // console.log(measures); // working, updates per post
+  const measures = state.measures.slice(Math.max(state.measures.length - 100, 0)); // this does work - direct access
+  // console.log(measures);
   return { measures };
 };
 
-export default connect(mapStateToProps)(Chart);
+export default connect(mapStateToProps)(SummaryChart);
 // export default Chart;

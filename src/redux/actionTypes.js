@@ -1,1 +1,2 @@
 export const ADD_MEASURE = "ADD_MEASURE";
+export const ADD_SPECIES_COUNT = "ADD_SPECIES_COUNT";
