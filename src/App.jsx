@@ -18,7 +18,7 @@ import {SpeciesChart} from './components/SpeciesChart';
 
 const theme = createMuiTheme({
   palette: {
-    type: 'dark', // Switching the dark mode on is a single property value change.
+    type: 'light', // dark | light
   }
 });
 
@@ -28,7 +28,7 @@ class App extends Component {
       <div className="App">
         <ThemeProvider theme={theme}>
           <Title/>
-          <Simulation width={800} height={500} background={0xC5C5C5}/>
+          <Simulation width={800} height={500} background={0xFFFFFF}/>
           <SummaryChart/>
           <SpeciesChart/>
         </ThemeProvider>

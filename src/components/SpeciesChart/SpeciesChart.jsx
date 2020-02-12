@@ -32,7 +32,7 @@ const options = {
   legend: {
     display: true,
     labels: {
-        fontColor: 'rgb(255, 255, 255, 0.5)'
+        fontColor: 'rgb(63, 63, 191, 0.9)'
     }
   },    
   layout: {
@@ -61,12 +61,13 @@ function SpeciesChart ({species}) {
 
   const datasets = Object.keys(chartData).map((name) => {
     let colour = PIXI.utils.premultiplyTintToRgba(name, 0.5);
+    let borderColourString = 'rgba('+(colour[0]*0x255)+','+(colour[1]*0x255)+','+(colour[2]*0x255)+', 0.9)';
     let colourString = 'rgba('+(colour[0]*0x255)+','+(colour[1]*0x255)+','+(colour[2]*0x255)+', 0.5)';
     // console.log(colourString);
     return {
       label: name,
       data: chartData[name],
-      borderColor: colourString,
+      borderColor: borderColourString,
       backgroundColor: colourString,
       borderWidth: 1,
       pointRadius: 1,

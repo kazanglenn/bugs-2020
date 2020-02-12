@@ -9,6 +9,7 @@ const useStyles = makeStyles({
   card: {
     maxWidth: 800,
     maxHeight: 200,
+    // backgroundColor: '#ffffff',
     margin: 5,
     display: 'flex',
     flexDirection: 'row'
@@ -39,7 +40,7 @@ const options = {
   legend: {
     display: true,
     labels: {
-        fontColor: 'rgb(255, 255, 255, 0.5)'
+        fontColor: 'rgb(63, 63, 191, 0.9)'
     }
   },    
   layout: {
@@ -62,8 +63,8 @@ function SummaryChart ({measures}) {
         label: "Bugs",
         data: measures && measures.length ? measures.map((m) => {return {x: m.cycle, y: m.bugs}}) : [],
         yAxisID: "bugs",
-        borderColor: 'rgba(247, 247, 186, 0.5)',
-        backgroundColor: 'rgba(247, 247, 186, 0.3)',
+        borderColor: 'rgba(191, 63, 63, 0.5)',
+        backgroundColor: 'rgba(191, 63, 63, 0.3)',
         borderWidth: 1,
         pointRadius: 1,
         pointHoverRadius: 1

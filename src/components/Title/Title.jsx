@@ -14,7 +14,7 @@ const useStyles = makeStyles({
     flexDirection: 'row'
   },
   content: {
-    width: "50%"
+    width: "80%"
   },
   media: {
     margin: 5,
