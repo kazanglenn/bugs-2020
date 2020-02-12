@@ -1,12 +1,5 @@
 
-export const getMeasuresState = store => store.measures;
+export const getMeasures = state => state.measures ? state.measures : [];
+export const getSpecies = state => state.species ? state.species : [];
+export const getControl = state => state.control ? state.control : {};
 
-export const getMeasures = store =>
-    getMeasuresState(store) ? getMeasuresState(store).measures : [];
-
-export const getSpeciesState = store => store.species;
-
-export const getSpecies = store =>
-    getSpeciesState(store) ? getSpeciesState(store).species : [];
-    
-    

@@ -92,13 +92,7 @@ function SpeciesChart ({species}) {
 };
 
 const mapStateToProps = state => {
-  // console.log(state); // working, updates per post
-  // console.log(state.species);
-  // const species = getSpecies(state); // TODO - REDUCER NOT WORKING BUT SHOULD
-  const species = state.species.slice(Math.max(state.species.length - 100, 0)); // NOT using reducer
-  // const species = state.species;
-  // console.log("X: "+species);
-
+  const species = getSpecies(state).slice(Math.max(state.species.length - 100, 0));
   return { species };
 };
 

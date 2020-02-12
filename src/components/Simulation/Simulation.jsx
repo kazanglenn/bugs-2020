@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { addMeasure, addSpeciesCount } from '../../redux/actions';
+import { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl } from '../../redux/actions';
+import { getControl } from '../../redux/selectors';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import { Stage, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
@@ -200,6 +201,49 @@ const Algae = props => (
   />
 );
 
+function initBugs(count) {
+  var bugs = [...Array(count)].map(() => ({
+    type: "bug",
+    speed: Math.ceil((2 + Math.random() * 4) * 0.5),
+    // offset: Math.random() * 100,
+    turningSpeed: Math.random() - 0.8,
+    direction: Math.random() * Math.PI * 2,
+    tint: Math.round(Math.random() * 0xFFFFFF),
+    // TODO - width/height from props
+    x: Math.random() * 800,
+    y: Math.random() * 500,
+    _s: 0.6, // base speed - could add to globals
+    rotation: 0,
+    // w/h only for collision detection
+    width: 16,
+    height: 30,
+    energy: 400,
+    cycles: 0, // track age in cycls
+    breedThreshold: Math.floor(Math.random() * 1000) + 1000,
+    // info to allow geneology reports
+    geneology: {
+      id: uuidv4(),
+      parent: 'SEED', // track parent - this is initial SEED
+      children: [] // empty to start
+    }
+  }));
+  return bugs;
+}
+
+function initAlgae(count) {
+  var algae = [...Array(count)].map(() => ({
+    type: "algae",
+    // TODO - width/height from props
+    x: Math.random() * 800,
+    y: Math.random() * 500,
+    width: 15,
+    height: 15,
+    energy: Math.floor(Math.random() * 50) + 50 // spread initial values, avoid all breeding together
+  }));
+  return algae;
+}
+
+
 /**
 * -----------------------------------------------
 * Batch Component
@@ -220,47 +264,8 @@ const Batch = withPixiApp(class extends React.PureComponent {
         return prevState
     }
 
-    // create initial array of algae
-    var algae = [...Array(nextProps.algae)].map(() => ({
-      type: "algae",
-      // TODO - width/height from props
-      x: Math.random() * 800,
-      y: Math.random() * 500,
-      width: 15,
-      height: 15,
-      energy: Math.floor(Math.random() * 50) + 50 // spread initial values, avoid all breeding together
-    }));
-
-    // var algae = [];
-
-    // create initial bug array
-    var bugs = [...Array(nextProps.count)].map(() => ({
-      type: "bug",
-      speed: Math.ceil((2 + Math.random() * 4) * 0.5),
-      // offset: Math.random() * 100,
-      turningSpeed: Math.random() - 0.8,
-      direction: Math.random() * Math.PI * 2,
-      tint: Math.round(Math.random() * 0xFFFFFF),
-      // TODO - width/height from props
-      x: Math.random() * 800,
-      y: Math.random() * 500,
-      _s: 0.6, // base speed - could add to globals
-      rotation: 0,
-      // w/h only for collision detection
-      width: 16,
-      height: 30,
-      energy: 400,
-      cycles: 0, // track age in cycls
-      breedThreshold: Math.floor(Math.random() * 1000) + 1000,
-      // info to allow geneology reports
-      geneology: {
-        id: uuidv4(),
-        parent: 'SEED', // track parent - this is initial SEED
-        children: [] // empty to start
-      }
-    }));
-
-    // unit into common 'items' list
+    var algae = initAlgae(nextProps.algae);
+    var bugs = initBugs(nextProps.count);
     var items = algae.concat(bugs);
 
     return {
@@ -278,15 +283,16 @@ const Batch = withPixiApp(class extends React.PureComponent {
       // were being read as strings - so = 80020 not 820!
       Number(this.props.app.screen.width) + padding,
       Number(this.props.app.screen.height) + padding
-    )
+    );
 
-    this.props.app.ticker.add(this.tick)
+    this.props.app.ticker.add(this.tick);
   }
 
   componentWillUnmount() {
-    this.props.app.ticker.remove(this.tick)
+    this.props.app.ticker.remove(this.tick);
   }
 
+  // called when a bug is clicked on-screen
   display(bug) {
     console.log(bug);
   }
@@ -376,7 +382,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
         }
         offspring.cycles = 0;
         // 'mutations'
-        if(Math.floor(Math.random() * 10) === 0) {  // 1 in n chance of a mutuation
+        if(Math.floor(Math.random() * 20) === 0) {  // 1 in n chance of a mutuation
           tracker.totalSpecies++;
           offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
           offspring.speed = item.speed + Math.floor(Math.random() * 3); // (1 + Math.random() * 10) * 0.5; // new speed
@@ -457,6 +463,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
       if(bugs.length === 0) {
         // TODO - stop if no more items, display message, stop processing
         console.log("all bugs dead");
+        this.props.app.ticker.stop();
       }
 
       let sample = {
@@ -479,17 +486,14 @@ const Batch = withPixiApp(class extends React.PureComponent {
         cnts[name] = cnts[name] ? cnts[name] + 1 : 1;
         return cnts;
       }, Object.create(null)); // or []
-      // console.log("COUNTS",counts);
 
       // normalise results into standard structure to make plotting easier
       const normal = Object.keys(counts).map((name) => {
         return {species: name, count: counts[name]}
       });
-      // console.log("NORMAL",normal);
 
       // wrap up results with a cycle indicator
       const species = {cycle: tracker.ticks, counts: normal}
-      // console.log("SPECIES",species);
 
       // add species counts to redux store
       this.props.addSpeciesCount(species);
@@ -523,6 +527,43 @@ const Batch = withPixiApp(class extends React.PureComponent {
       })}
     />
 
+    // manage control buttons
+    // TODO - move into function
+    switch (this.props.control) {
+      case 'PLAY':
+        // prevent repeated start calls by testing started
+        if (!this.props.app.ticker.started) {
+          this.props.app.ticker.start();
+        }
+        break;
+      case 'PAUSE':
+        this.props.app.ticker.stop();
+        break;
+      case 'RESET':
+        // stop processing
+        this.props.app.ticker.stop();
+        // reset the algae and bugs
+        let bugs = initBugs(this.props.count);
+        let algae = initAlgae(this.props.algae);
+        this.state.items = algae.concat(bugs);
+        // restart processing
+        this.props.app.ticker.start();
+        // reset measures redux array
+        this.props.resetMeasure();
+        // reset species redux array
+        this.props.resetSpeciesCount();
+        // reset tracker counts
+        // TODO - call function, avoid this hard coding of values
+        tracker.ticks = 0;
+        tracker.totalBugs = 10;
+        tracker.totalSpecies = 10;
+        // set control value
+        this.props.setControl('PLAY'); // set running again
+        break;
+      default:
+        console.log("command not recognised ...");
+    }
+
     return [...algae, ...bugs, text];
   }
 });
@@ -536,24 +577,38 @@ function Simulation (props) {
 
   const classes = useStyles(props);
 
-    // note passing function to Batch component
-    return (
-      <Card className={classes.card}>
-        <Stage width={props.width} height={props.height} options={{ backgroundColor: props.background }}>
-          <Settings>
-            {config => (
-              <Container properties={config}>
-                <Batch addMeasure={props.addMeasure} addSpeciesCount={props.addSpeciesCount} count={config.bugs} algae={config.algae}/>
-              </Container>
-            )}
-          </Settings>
-        </Stage>
-      </Card>
-    );
-
+  // note passing functions to Batch component
+  return (
+    <Card className={classes.card}>
+      <Stage width={props.width} height={props.height} options={{ backgroundColor: props.background }}>
+        <Settings>
+          {config => (
+            <Container properties={config}>
+              <Batch 
+                control={props.control}
+                setControl={props.setControl}
+                getControl={props.getControl}
+                addMeasure={props.addMeasure}
+                addSpeciesCount={props.addSpeciesCount}
+                resetMeasure={props.resetMeasure}
+                resetSpeciesCount={props.resetSpeciesCount}
+                count={config.bugs} algae={config.algae}/>
+            </Container>
+          )}
+        </Settings>
+      </Stage>
+    </Card>
+  );
 }
 
+
+const mapStateToProps = state => {
+  const control = getControl(state);
+  return { control };
+};
+
 export default connect(
-  null,
-  { addMeasure, addSpeciesCount }
+  mapStateToProps,
+  // null,
+  { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, getControl }
 )(Simulation);

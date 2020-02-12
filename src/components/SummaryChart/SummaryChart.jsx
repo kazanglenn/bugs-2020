@@ -9,7 +9,6 @@ const useStyles = makeStyles({
   card: {
     maxWidth: 800,
     maxHeight: 200,
-    // backgroundColor: '#ffffff',
     margin: 5,
     display: 'flex',
     flexDirection: 'row'
@@ -95,13 +94,8 @@ function SummaryChart ({measures}) {
 };
 
 const mapStateToProps = state => {
-  // console.log(state); // working, updates per post
-  // const measures = getMeasures(state); // TODO - REDUCER NOT WORKING BUT SHOULD
-  // take last 200 records
-  const measures = state.measures.slice(Math.max(state.measures.length - 100, 0)); // this does work - direct access
-  // console.log(measures);
+  const measures = getMeasures(state).slice(Math.max(state.measures.length - 100, 0));
   return { measures };
 };
 
 export default connect(mapStateToProps)(SummaryChart);
-// export default Chart;
