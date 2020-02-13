@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl } from '../../redux/actions';
+import { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, setTracker } from '../../redux/actions';
 import { getControl } from '../../redux/selectors';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,6 +8,10 @@ import { Stage, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
 import * as PIXI from "pixi.js";
 import uuidv4 from 'uuid/v4';
 
+// project components
+import { contact } from './physics';
+
+// images
 import BugImage from '../../assets/flatworm.png';
 import AlgaeImage from '../../assets/algae_small.png';
 
@@ -44,15 +48,16 @@ const globals = {
 
 /**
 * -----------------------------------------------
-* tracker, for stats
-* TODO - should this be state?
+* tracker, for stats, local copy to make redux management easier
+* update redux copy for display
 * -----------------------------------------------
 */
 var tracker = {
   ticks: 0,
+  bugs: 0,
+  algae: 0,
   totalBugs: 10, // init value
   totalSpecies: 10 // init value
-  // chartData: []
 }
 
 /**
@@ -76,65 +81,6 @@ const config = {
   listeners: [],
   onChange: function (prop, val) { this.listeners.forEach(l => l(prop, val)) },
 }
-
-/**
-* -----------------------------------------------
-* Contact function - have two sprites connected?  
-* see https://github.com/kittykatattack/learningPixi#the-hittestrectangle-function
-* -----------------------------------------------
-*/
-function contact(r1, r2) {
-
-  //Define the variables we'll need to calculate
-  let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
-
-  //hit will determine whether there's a collision
-  hit = false;
-
-  // console.log("h", r1.height, r2.height);
-
-  //Find the center points of each sprite
-  r1.centerX = r1.x + r1.width / 2;
-  r1.centerY = r1.y + r1.height / 2;
-  r2.centerX = r2.x + r2.width / 2;
-  r2.centerY = r2.y + r2.height / 2;
-
-  //Find the half-widths and half-heights of each sprite
-  r1.halfWidth = r1.width / 2;
-  r1.halfHeight = r1.height / 2;
-  r2.halfWidth = r2.width / 2;
-  r2.halfHeight = r2.height / 2;
-
-  //Calculate the distance vector between the sprites
-  vx = r1.centerX - r2.centerX;
-  vy = r1.centerY - r2.centerY;
-
-  //Figure out the combined half-widths and half-heights
-  combinedHalfWidths = r1.halfWidth + r2.halfWidth;
-  combinedHalfHeights = r1.halfHeight + r2.halfHeight;
-
-  //Check for a collision on the x axis
-  if (Math.abs(vx) < combinedHalfWidths) {
-
-    //A collision might be occurring. Check for a collision on the y axis
-    if (Math.abs(vy) < combinedHalfHeights) {
-
-      //There's definitely a collision happening
-      hit = true;
-    } else {
-
-      //There's no collision on the y axis
-      hit = false;
-    }
-  } else {
-
-    //There's no collision on the x axis
-    hit = false;
-  }
-
-  //`hit` will be either `true` or `false`
-  return hit;
-};
 
 /**
 * -----------------------------------------------
@@ -460,39 +406,40 @@ const Batch = withPixiApp(class extends React.PureComponent {
     // every nth tick, record bug volumes by species - not too oftem, will slow processing
     if(tracker.ticks % globals.sampleInterval === 0) {
       let bugs = this.state.items.filter(item => item.type === 'bug');
+      let algae = this.state.items.filter(item => item.type === 'algae');
+
       if(bugs.length === 0) {
-        // TODO - stop if no more items, display message, stop processing
+        // TODO - display message
         console.log("all bugs dead");
         this.props.app.ticker.stop();
       }
 
+      // add population measures to redux store
       let sample = {
         cycle: tracker.ticks,
         bugs: bugs.length,
-        algae: this.state.items.filter(i => i.type === "algae").length
-      }
-
-      // TODO - cap size here? pop from front if > than x
-      // add population measures to redux store
+        algae: algae.length
+      };
       this.props.addMeasure(sample);
 
-      // species counts
-      // let distinctSpecies = [...new Set(bugs.map(item => item.tint))];
-      // console.log("DISTINCT",distinctSpecies);
+      // update redux tracker with local values
+      tracker.bugs = bugs.length;
+      tracker.algae = algae.length;
+      this.props.setTracker(tracker);
 
-      // count species
+      // count population by species
       const counts = bugs.reduce((cnts, item) => {
         let name = item.tint.toString();
         cnts[name] = cnts[name] ? cnts[name] + 1 : 1;
         return cnts;
       }, Object.create(null)); // or []
 
-      // normalise results into standard structure to make plotting easier
+      // normalise species counts into standard structure to make plotting easier
       const normal = Object.keys(counts).map((name) => {
         return {species: name, count: counts[name]}
       });
 
-      // wrap up results with a cycle indicator
+      // wrap up species counts with a cycle indicator
       const species = {cycle: tracker.ticks, counts: normal}
 
       // add species counts to redux store
@@ -546,6 +493,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
         let bugs = initBugs(this.props.count);
         let algae = initAlgae(this.props.algae);
         this.state.items = algae.concat(bugs);
+        // this.setState({items: algae.concat(bugs)}); // should use, but nested
         // restart processing
         this.props.app.ticker.start();
         // reset measures redux array
@@ -587,7 +535,7 @@ function Simulation (props) {
               <Batch 
                 control={props.control}
                 setControl={props.setControl}
-                getControl={props.getControl}
+                setTracker={props.setTracker}
                 addMeasure={props.addMeasure}
                 addSpeciesCount={props.addSpeciesCount}
                 resetMeasure={props.resetMeasure}
@@ -603,12 +551,11 @@ function Simulation (props) {
 
 
 const mapStateToProps = state => {
-  const control = getControl(state);
+  const control = getControl(state);  
   return { control };
 };
 
 export default connect(
   mapStateToProps,
-  // null,
-  { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, getControl }
+  { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, setTracker }
 )(Simulation);

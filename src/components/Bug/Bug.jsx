@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
-import { getBugList } from "../../redux/selectors";
+import { getBug } from "../../redux/selectors";
 import Card from '@material-ui/core/Card';
 
 const useStyles = makeStyles({
@@ -14,7 +14,7 @@ const useStyles = makeStyles({
   }
 });
 
-export default function BugList() {
+export default function Bug() {
 
   const classes = useStyles();
 

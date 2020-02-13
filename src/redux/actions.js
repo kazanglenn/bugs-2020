@@ -1,4 +1,4 @@
-import { ADD_MEASURE, ADD_SPECIES_COUNT, RESET_MEASURE, RESET_SPECIES_COUNT, SET_CONTROL } from "./actionTypes";
+import { ADD_MEASURE, ADD_SPECIES_COUNT, RESET_MEASURE, RESET_SPECIES_COUNT, SET_CONTROL, SET_TRACKER } from "./actionTypes";
 
 export const addMeasure = measure => ({
   type: ADD_MEASURE,
@@ -26,5 +26,12 @@ export const setControl = control => ({
   type: SET_CONTROL,
   payload: {
     control
+  }
+});
+
+export const setTracker = tracker => ({
+  type: SET_TRACKER,
+  payload: {
+    tracker
   }
 });

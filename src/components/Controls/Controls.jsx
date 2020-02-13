@@ -27,25 +27,17 @@ function Controls(props) {
 
   const classes = useStyles();
 
-  // TODO ... functionality!
   // TODO - statics not strings
-
   return (
     <Card className={classes.card}>
-      <Button className={classes.card} variant="contained" onClick={() => { props.setControl('PAUSE'); console.log('PAUSE'); }}><PauseIcon/></Button>
-      <Button className={classes.card} variant="contained" onClick={() => { props.setControl('PLAY'); console.log('PLAY'); }}><PlayArrowIcon/></Button>
-      <Button className={classes.card} variant="contained" onClick={() => { props.setControl('RESET'); console.log('RESET'); }}><RefreshIcon/></Button>
+      <Button className={classes.card} variant="contained" onClick={() => { props.setControl('PAUSE'); }}><PauseIcon /></Button>
+      <Button className={classes.card} variant="contained" onClick={() => { props.setControl('PLAY'); }}><PlayArrowIcon /></Button>
+      <Button className={classes.card} variant="contained" onClick={() => { props.setControl('RESET'); }}><RefreshIcon /></Button>
     </Card>
   );
 }
-
-// const mapStateToProps = state => {
-//   null,
-//   { setControl }
-// };
 
 export default connect(
   null,
   { setControl }
 )(Controls);
-// export default connect(mapStateToProps)(Controls);

@@ -1,5 +1,7 @@
 import { ADD_MEASURE, RESET_MEASURE } from "../actionTypes";
 
+// TODO - cap size here? pop from front if > than x
+
 const measures = (state = [], action) => {
     switch (action.type) {
       case ADD_MEASURE:

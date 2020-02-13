@@ -9,9 +9,7 @@ const useStyles = makeStyles({
   card: {
     maxWidth: 800,
     maxHeight: 200,
-    margin: 5,
-    display: 'flex',
-    flexDirection: 'row'
+    margin: 5
   }
 });
 
@@ -34,14 +32,14 @@ const options = {
         position: 'right',
         display: true
       }
-    ]      
+    ]
   },
   legend: {
     display: true,
     labels: {
-        fontColor: 'rgb(63, 63, 191, 0.9)'
+      fontColor: 'rgb(63, 63, 191, 0.9)'
     }
-  },    
+  },
   layout: {
     padding: {
       left: 10,
@@ -52,15 +50,15 @@ const options = {
   }
 }
 
-function SummaryChart ({measures}) {
-  
+function SummaryChart({ measures }) {
+
   const classes = useStyles();
 
   const chartdata = {
     datasets: [
       {
         label: "Bugs",
-        data: measures && measures.length ? measures.map((m) => {return {x: m.cycle, y: m.bugs}}) : [],
+        data: measures && measures.length ? measures.map((m) => { return { x: m.cycle, y: m.bugs } }) : [],
         yAxisID: "bugs",
         borderColor: 'rgba(191, 63, 63, 0.5)',
         backgroundColor: 'rgba(191, 63, 63, 0.3)',
@@ -70,7 +68,7 @@ function SummaryChart ({measures}) {
       },
       {
         label: "Algae",
-        data: measures && measures.length ? measures.map((m) => {return {x: m.cycle, y: m.algae}}) : [],
+        data: measures && measures.length ? measures.map((m) => { return { x: m.cycle, y: m.algae } }) : [],
         yAxisID: "algae",
         borderColor: 'rgba(0, 138, 0, 0.7)',
         backgroundColor: 'rgba(0, 138, 0, 0.3)',
@@ -89,8 +87,8 @@ function SummaryChart ({measures}) {
         height={200}
         options={options}
       />
-    </Card>    
-  );  
+    </Card>
+  );
 };
 
 const mapStateToProps = state => {

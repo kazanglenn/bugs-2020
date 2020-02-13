@@ -10,9 +10,7 @@ const useStyles = makeStyles({
   card: {
     maxWidth: 800,
     maxHeight: 300,
-    margin: 5,
-    display: 'flex',
-    flexDirection: 'row'
+    margin: 5
   }
 });
 
@@ -27,14 +25,14 @@ const options = {
     yAxes: [{
       display: true,
       position: 'left'
-    }]      
+    }]
   },
   legend: {
     display: true,
     labels: {
-        fontColor: 'rgb(63, 63, 191, 0.9)'
+      fontColor: 'rgb(63, 63, 191, 0.9)'
     }
-  },    
+  },
   layout: {
     padding: {
       left: 10,
@@ -45,25 +43,22 @@ const options = {
   }
 }
 
-function SpeciesChart ({species}) {
-  
-  const classes = useStyles();
+function SpeciesChart({ species }) {
 
-  // console.log(species)
+  const classes = useStyles();
 
   // species data needs to be pivoted from by cycle to by species to chart - TODO use reducer for this
   const chartData = [];
   species.forEach(element => {
     element.counts.forEach(entry => {
-      chartData[entry.species] ? chartData[entry.species].push({x: element.cycle, y: entry.count}) : chartData[entry.species] = [{x: element.cycle, y: entry.count}];
+      chartData[entry.species] ? chartData[entry.species].push({ x: element.cycle, y: entry.count }) : chartData[entry.species] = [{ x: element.cycle, y: entry.count }];
     });
   });
 
   const datasets = Object.keys(chartData).map((name) => {
     let colour = PIXI.utils.premultiplyTintToRgba(name, 0.5);
-    let borderColourString = 'rgba('+(colour[0]*0x255)+','+(colour[1]*0x255)+','+(colour[2]*0x255)+', 0.9)';
-    let colourString = 'rgba('+(colour[0]*0x255)+','+(colour[1]*0x255)+','+(colour[2]*0x255)+', 0.5)';
-    // console.log(colourString);
+    let borderColourString = 'rgba(' + (colour[0] * 0x255) + ',' + (colour[1] * 0x255) + ',' + (colour[2] * 0x255) + ', 0.9)';
+    let colourString = 'rgba(' + (colour[0] * 0x255) + ',' + (colour[1] * 0x255) + ',' + (colour[2] * 0x255) + ', 0.5)';
     return {
       label: name,
       data: chartData[name],
@@ -87,8 +82,8 @@ function SpeciesChart ({species}) {
         height={300}
         options={options}
       />
-    </Card>    
-  );  
+    </Card>
+  );
 };
 
 const mapStateToProps = state => {
