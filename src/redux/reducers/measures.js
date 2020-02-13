@@ -5,9 +5,9 @@ import { ADD_MEASURE, RESET_MEASURE } from "../actionTypes";
 const measures = (state = [], action) => {
     switch (action.type) {
       case ADD_MEASURE:
-        const { measure } = action.payload;
+        const { measure } = action.payload;        
         return [
-          ...state,
+          ...state.slice(Math.max(state.length - 100, 0)), // trim to last 100
           measure
         ]   
       case RESET_MEASURE:

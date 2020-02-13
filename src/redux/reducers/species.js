@@ -6,7 +6,7 @@ const species = (state = [], action) => {
     switch (action.type) {
       case ADD_SPECIES_COUNT:
         return [
-          ...state,
+          ...state.slice(Math.max(state.length - 100, 0)),
           action.payload.species
         ]
       case RESET_SPECIES_COUNT:

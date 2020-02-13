@@ -87,7 +87,7 @@ function SpeciesChart({ species }) {
 };
 
 const mapStateToProps = state => {
-  const species = getSpecies(state).slice(Math.max(state.species.length - 100, 0));
+  const species = getSpecies(state);
   return { species };
 };
 

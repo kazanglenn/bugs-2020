@@ -92,7 +92,7 @@ function SummaryChart({ measures }) {
 };
 
 const mapStateToProps = state => {
-  const measures = getMeasures(state).slice(Math.max(state.measures.length - 100, 0));
+  const measures = getMeasures(state);
   return { measures };
 };
 
