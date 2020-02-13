@@ -6,7 +6,6 @@ const measures = (state = [], action) => {
     switch (action.type) {
       case ADD_MEASURE:
         const { measure } = action.payload;
-        // return state.concat(measure);     
         return [
           ...state,
           measure
