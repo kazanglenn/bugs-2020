@@ -12,7 +12,7 @@ const initTracker = {
 const tracker = (state = initTracker, action) => {
   switch (action.type) {
     case SET_TRACKER:
-      return action.payload.tracker;
+      return Object.assign({}, action.payload.tracker);
     default:
       return state;
   }
