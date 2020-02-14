@@ -4,9 +4,11 @@
 
 This is a project with the intention of creating a simple simulated environment to demonstrate machine learning and adaptation in an unpredictable environment. There are mobile entities, `bugs`, that exist and harvest static entities, `algae`, for energy. The `algae` reproduce by spawning new entities in close proximity, where there is not already algae present, leading to clumping. The `bugs` reproduce when they have consumed enough energy, in the form of the `algae`, to do so. Movement takes energy away from the `bugs`, with an additional penalty based on the `bugs` speed. The `algae` accumulate energy through time, to a maximum.
 
-The `bugs` periodically mutate, changing attributes such as the speed at which they move, or the level of energy they will accumulate before reproducing. Each `bug` lineage is indicated by a colour. There are 10 initial `bug` attribute permutations seeded in the environment.
+The `bugs` periodically mutate, changing attributes such as the speed at which they move, or the level of energy they will accumulate before reproducing. Each `bug` lineage is indicated by a colour. There are 10 initial `bug` attribute permutations seeded in the environment. There is a chart to indicate the population of the lineages through time, where the colour is the same as the `bug` colour.
 
-In time species will come to dominate, with better attribute sets. If too efficient, all the `algae` are consumed and that results in the end of the simulation. There is no random re-seeding at the moment. Classic foxes and rabbit cycles can be observed, with synchnronised boom-bust population oscilations of both `bugs` and `algae`.
+![Species Lineage](https://github.com/kazanglenn/bugs-2020/blob/develop/images/bug-species.png)
+
+In time certain species will come to dominate, with better attribute sets. If too efficient, all the `algae` are consumed and that results in the end of the simulation. There is no random re-seeding at the moment. A classic *foxes and rabbit* cycle pattern can be observed, with synchnronised boom-bust population oscilations of both `bugs` and `algae`.
 
 ![Population Cycles](https://github.com/kazanglenn/bugs-2020/blob/develop/images/bugs-and-algae.png)
 

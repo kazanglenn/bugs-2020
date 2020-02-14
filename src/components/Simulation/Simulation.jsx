@@ -44,7 +44,7 @@ const globals = {
   maxAlgae: 800,
   algaeBreedThreshold: 100,
   breedingCost: 100,
-  sampleInterval: 50 // number of ticks before counting species
+  sampleInterval: 100 // number of ticks before counting species
 }
 
 /**
@@ -68,7 +68,7 @@ var tracker = {
 */
 const config = {
   // these are starting values
-  bugs: 10,
+  bugs: 5,
   algae: 400, // max = 800
 
   properties: {
