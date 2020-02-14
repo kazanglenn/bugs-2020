@@ -16,6 +16,7 @@ const useStyles = makeStyles({
 
 const options = {
   responsive: true,
+  // animation: false,
   scales: {
     xAxes: [{
       display: true,
@@ -48,17 +49,18 @@ function SpeciesChart({ species }) {
   const classes = useStyles();
 
   // species data needs to be pivoted from by cycle to by species to chart - TODO use reducer for this
-  const chartData = [];
+  var chartData = [];
   species.forEach(element => {
     element.counts.forEach(entry => {
       chartData[entry.species] ? chartData[entry.species].push({ x: element.cycle, y: entry.count }) : chartData[entry.species] = [{ x: element.cycle, y: entry.count }];
     });
   });
 
-  const datasets = Object.keys(chartData).map((name) => {
+  var datasets = Object.keys(chartData).map((name) => {
     let colour = PIXI.utils.premultiplyTintToRgba(name, 0.5);
-    let borderColourString = 'rgba(' + (colour[0] * 0x255) + ',' + (colour[1] * 0x255) + ',' + (colour[2] * 0x255) + ', 0.9)';
-    let colourString = 'rgba(' + (colour[0] * 0x255) + ',' + (colour[1] * 0x255) + ',' + (colour[2] * 0x255) + ', 0.5)';
+    let hexcolour = [colour[0] * 0x255, colour[1] * 0x255, colour[2] * 0x255];
+    let borderColourString = 'rgba(' + hexcolour[0] + ',' + hexcolour[1] + ',' + hexcolour[2] + ', 0.9)';
+    let colourString = 'rgba(' + hexcolour[0] + ',' + hexcolour[1] + ',' + hexcolour[2] + ', 0.5)';
     return {
       label: name,
       data: chartData[name],
@@ -70,7 +72,7 @@ function SpeciesChart({ species }) {
     }
   });
 
-  const chartdata = {
+  var chartdata = {
     datasets: datasets
   }
 

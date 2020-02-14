@@ -58,3 +58,18 @@ export function contact(r1, r2) {
   };
   
   
+  // not used yet
+  export function wrap(item, xbounds, ybounds, width, height) {
+    if (item.x < xbounds) {
+      item.x += width;
+    }
+    else if (item.x > xbounds + width) {
+      item.x -= width;
+    }
+    if (item.y < ybounds) {
+      item.y += height;
+    }
+    else if (item.y > ybounds + height) {
+      item.y -= height;
+    }
+  }

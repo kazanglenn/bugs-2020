@@ -1,2 +1,2 @@
-import BugComponent from './Bug';
-export const Bug = BugComponent;
+import Component from './Bug';
+export const Bug = Component;
