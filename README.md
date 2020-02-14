@@ -38,5 +38,5 @@ A driver for the development of this app was the exploration and demonstration o
 
 The app is hosted using github pages. See the `environment` link from the project home page (above). Below is an example screenshot of the complete app running.
 
-![Complete Screenshot](https://github.com/kazanglenn/bugs-2020/blob/develop/images/bugs-2020-02-fullpage.png)
+![Complete Screenshot](https://github.com/kazanglenn/bugs-2020/blob/develop/images/bugs-2020-03-fullpage.png)
 
