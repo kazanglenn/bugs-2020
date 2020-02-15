@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Drawer from '@material-ui/core/Drawer';
+import {Parameters} from '../Parameters';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,6 +23,18 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header() {
   const classes = useStyles();
+  // React hooks state setting
+  const [state, setState] = React.useState({
+    parameters: false
+  });
+
+  const toggleDrawer = (open) => event => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setState({ ...state, parameters: open });
+  };  
 
   return (
     <div className={classes.root}>
@@ -33,9 +46,12 @@ export default function Header() {
           <Typography variant="h6" className={classes.title}>
             Bugs 2020
           </Typography>
-          <Button color="inherit">Parameters</Button>
+          <Button color="inherit" onClick={toggleDrawer(true)}>Parameters</Button>
         </Toolbar>
       </AppBar>
+      <Drawer anchor="right" open={state.parameters} onClose={toggleDrawer(false)}>
+        <Parameters/>
+      </Drawer>
     </div>
   );
 
