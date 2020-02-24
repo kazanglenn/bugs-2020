@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { setParameters, resetParameters } from '../../redux/actions';
@@ -81,20 +81,38 @@ function Parameters(props) {
   const classes = useStyles();
 
   // clone for local adjustment, copy back to redux parameters if saved
-  const params = Object.assign({}, props.parameters);
+  const [params, setParams] = useState(props.parameters);
 
   // TODO - consolidate functions, needless repetition here
   const handleMaxBugsChange = (event, newValue) => {
-    params.maxBugs = newValue;
+    var newParams = Object.assign({}, params);
+    newParams.maxBugs = newValue;
+    setParams(newParams);
   };
+
   const handleBreedingCostChange = (event, newValue) => {
-    params.breedingCost = newValue;
+    var newParams = Object.assign({}, params);
+    newParams.breedingCost = newValue;
+    setParams(newParams);
   };
+
   const handleMaxAlgaeChange = (event, newValue) => {
-    params.maxAlgae = newValue;
+    var newParams = Object.assign({}, params);
+    newParams.maxAlgae = newValue;
+    setParams(newParams);
   };
+
   const handleAlgaeBreedThresholdChange = (event, newValue) => {
-    params.algaeBreedThreshold = newValue;
+    var newParams = Object.assign({}, params);
+    newParams.algaeBreedThreshold = newValue;
+    setParams(newParams);
+  };
+
+  // reset parameters to defaults
+  const reset = () => {
+    props.resetParameters(); // reset redux parameters
+    // TODO - await? reset to last values, 2nd click shows actual values
+    setParams(props.parameters); // update local component state
   };
 
   return (
@@ -103,7 +121,7 @@ function Parameters(props) {
         Maximum Bug Population
       </Typography>
       <Slider
-        defaultValue={params.maxBugs}
+        value={params.maxBugs}
         onChange={handleMaxBugsChange}
         aria-labelledby="max-bugs-slider"
         step={10}
@@ -116,20 +134,20 @@ function Parameters(props) {
         Bug Breeding Cost (Energy)
       </Typography>
       <Slider
-        defaultValue={params.breedingCost}
+        value={params.breedingCost}
         onChange={handleBreedingCostChange}
         aria-labelledby="bug-breed-cost-slider"
         step={10}
         marks={marks}
-        min={10}
-        max={300}
+        min={0}
+        max={500}
       />
       <div className={classes.margin} />
       <Typography id="max-algae-slider" gutterBottom>
         Maximum Algae Population
       </Typography>
       <Slider
-        defaultValue={params.maxAlgae}
+        value={params.maxAlgae}
         onChange={handleMaxAlgaeChange}
         aria-labelledby="max-algae-slider"
         step={50}
@@ -142,17 +160,18 @@ function Parameters(props) {
         Algae Breeding Threshold (Energy)
       </Typography>
       <Slider
-        defaultValue={params.algaeBreedThreshold}
+        value={params.algaeBreedThreshold}
         onChange={handleAlgaeBreedThresholdChange}
         aria-labelledby="algae-breed-threshold-slider"
         step={10}
         marks={marks}
         min={50}
-        max={200}
+        max={300}
       />
       <div className={classes.margin} />
-      <Button className={classes.button} variant="contained" onClick={() => { props.setParameters(params); }}>Save</Button>
-      <Button className={classes.button} variant="contained" onClick={() => { props.resetParameters(); }}>Reset</Button>
+      <Button className={classes.button} variant="contained" onClick={() => { props.setParameters(params); props.toggle(false); }}>Save</Button>
+      <Button className={classes.button} variant="contained" onClick={() => { reset(); }}>Reset</Button>
+      <Button className={classes.button} variant="contained" onClick={() => { props.toggle(false); }}>Close</Button>
     </div>
   );
 

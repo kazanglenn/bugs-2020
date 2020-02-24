@@ -24,7 +24,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header() {
   const classes = useStyles();
-  // React hooks state setting
+
+  // React hooks state management
   const [state, setState] = React.useState({
     parameters: false
   });
@@ -54,7 +55,7 @@ export default function Header() {
         </Toolbar>
       </AppBar>
       <Drawer anchor="right" open={state.parameters} onClose={toggleDrawer(false)}>
-        <Parameters/>
+        <Parameters toggle={toggleDrawer()}/>
       </Drawer>
     </div>
   );

@@ -163,7 +163,6 @@ const notice = <Text
 function initBugs(count) {
   var bugs = [...Array(count)].map(() => ({
     speed: Math.ceil((2 + Math.random() * 4) * 0.5),
-    // offset: Math.random() * 100,
     turningSpeed: Math.random() - 0.8,
     direction: Math.random() * Math.PI * 2,
     tint: Math.round(Math.random() * 0xFFFFFF),
@@ -393,7 +392,8 @@ const Batch = withPixiApp(class extends React.PureComponent {
       }
 
       // PHOTOSYNTHESISE
-      item.energy = Math.min(100, item.energy + 1); // put a cap on energy stored 
+      // put a cap on energy stored based on breeding threshold - must have that much
+      item.energy = Math.min(this.props.parameters.algaeBreedThreshold, item.energy + 1);
     })
 
     return algae;
