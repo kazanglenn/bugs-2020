@@ -44,6 +44,7 @@ var tracker = {
   ticks: 0,
   bugs: 0,
   algae: 0,
+  speciesCounts: {}, // support constant tracking of population by species
   totalBugs: 10, // init value
   totalSpecies: 10 // init value
 }
@@ -184,6 +185,12 @@ function initBugs(count) {
       children: [] // empty to start
     }
   }));
+
+  // inititialise species population tracker
+  bugs.forEach((bug) => {
+    tracker.speciesCounts[bug.tint] = 1; 
+  });
+
   return bugs;
 }
 
@@ -260,6 +267,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
     items.forEach((item, i) => {
       if(item.energy === 0) {
         items.splice(i, 1); // other is at position i
+        tracker.speciesCounts[item.tint]--;
       }
     });
     return items;
@@ -289,6 +297,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
         }
         offspring.cycles = 0;
         // 'mutations'
+        // TODO - make small single adjustments, allow slection of traits
         if(Math.floor(Math.random() * 20) === 0) {  // 1 in n chance of a mutuation
           tracker.totalSpecies++;
           offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
@@ -297,6 +306,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
           offspring.breedThreshold += item.breedThreshold + Math.floor(Math.random() * 50) - 25; // variable breed speed, up or down
         }
         bugs.push(offspring); // add adjusted copy
+        tracker.speciesCounts[offspring.tint] ? tracker.speciesCounts[offspring.tint]++ : tracker.speciesCounts[offspring.tint] = 1; // track new births
       }
 
       // EAT BUGS
@@ -454,16 +464,18 @@ const Batch = withPixiApp(class extends React.PureComponent {
       tracker.algae = this.state.algae.length;
       this.props.setTracker(tracker);
 
-      // count population by species
-      const counts = this.state.bugs.reduce((cnts, item) => {
-        let name = item.tint.toString();
-        cnts[name] = cnts[name] ? cnts[name] + 1 : 1;
-        return cnts;
-      }, Object.create(null)); // or []
-
+      // periodically trim tracker species counts of 0 values
+      Object.entries(tracker.speciesCounts).forEach(([key, value]) => {
+        // should not need undefined test, not sure where undefined coming from
+        if(tracker.speciesCounts[key] === 0 || key === 'undefined') {
+          delete tracker.speciesCounts[key];
+        }
+      });    
+         
       // normalise species counts into standard structure to make plotting easier
-      const normal = Object.keys(counts).map((name) => {
-        return {species: name, count: counts[name]}
+      // const normal = Object.keys(counts).map((name) => {
+      const normal = Object.keys(tracker.speciesCounts).map((name) => {
+        return {species: name, count: tracker.speciesCounts[name]}
       });
 
       // wrap up species counts with a cycle indicator
