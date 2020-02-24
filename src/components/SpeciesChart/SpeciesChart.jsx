@@ -9,13 +9,14 @@ import * as PIXI from "pixi.js";
 const useStyles = makeStyles({
   card: {
     maxWidth: 800,
-    maxHeight: 400,
+    maxHeight: 500,
     margin: 5
   }
 });
 
 const options = {
   responsive: true,
+  animation: false,
   scales: {
     xAxes: [{
       display: true,
@@ -85,7 +86,7 @@ function SpeciesChart({ species }) {
       <Line
         data={chartdata}
         width={800}
-        height={400}
+        height={500}
         options={options}
       />
     </Card>

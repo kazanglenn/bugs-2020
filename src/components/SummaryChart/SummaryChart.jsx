@@ -15,6 +15,7 @@ const useStyles = makeStyles({
 
 const options = {
   responsive: true,
+  animation: false,
   scales: {
     xAxes: [{
       display: true,
