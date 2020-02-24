@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, setTracker } from '../../redux/actions';
-import { getControl } from '../../redux/selectors';
+import { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, setTracker, setParameters } from '../../redux/actions';
+import { getControl, getParameters } from '../../redux/selectors';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import { Stage, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
@@ -33,19 +33,6 @@ const useStyles = makeStyles({
     flexDirection: 'row'
   })
 });
-
-/**
-* -----------------------------------------------
-* Global constants
-* -----------------------------------------------
-*/
-const globals = {
-  maxBugs: 200,
-  maxAlgae: 800,
-  algaeBreedThreshold: 100,
-  breedingCost: 100,
-  sampleInterval: 100 // number of ticks before counting species
-}
 
 /**
 * -----------------------------------------------
@@ -183,7 +170,7 @@ function initBugs(count) {
     // TODO - width/height from props
     x: Math.random() * 800,
     y: Math.random() * 500,
-    _s: 0.6, // base speed - could add to globals
+    _s: 0.6, // base speed - could add to parameters
     rotation: 0,
     // w/h used for collision detection, and controls sprite size
     width: 15,
@@ -269,11 +256,6 @@ const Batch = withPixiApp(class extends React.PureComponent {
     this.props.app.ticker.remove(this.tick);
   }
 
-  // called when a bug is clicked on-screen
-  // display(bug) {
-  //   console.log(bug);
-  // }
-
   // remove items without energy - 'deaths'
   deaths = (items) => {
     items.forEach((item, i) => {
@@ -291,9 +273,9 @@ const Batch = withPixiApp(class extends React.PureComponent {
     // BUG PROCESSING
     bugs.forEach((item) => {
       // BREED
-      if(item.energy >= item.breedThreshold && bugs.length < globals.maxBugs) {
+      if(item.energy >= item.breedThreshold && bugs.length < this.props.parameters.maxBugs) {
         tracker.totalBugs++;
-        item.energy = Math.round(item.energy/2) - globals.breedingCost; // half, plus breeding cost
+        item.energy = Math.round(item.energy/2) - this.props.parameters.breedingCost; // half, plus breeding cost
         let offspring = Object.assign({}, item); // empty object to receive contents of item
         offspring.direction = Math.random() * Math.PI * 2; // new heading
         // geneology tracking
@@ -370,7 +352,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
     algae.forEach((item) => {
       // BREED
       // TODO - limit to edge algae, or perhaps sample pop if large, to speed processing
-      if(item.energy >= globals.algaeBreedThreshold && algae.length < globals.maxAlgae) {
+      if(item.energy >= this.props.parameters.algaeBreedThreshold && algae.length < this.props.parameters.maxAlgae) {
         let offspring = Object.assign({}, item); // empty object to receive contents of item
 
         let index = Math.floor(Math.random() * positions.length);
@@ -457,7 +439,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
     tracker.ticks++;
 
     // every nth tick, record bug volumes by species - not too oftem, will slow processing
-    if(tracker.ticks % globals.sampleInterval === 0) {
+    if(tracker.ticks % this.props.parameters.sampleInterval === 0) {
 
       // add population measures to redux store
       let sample = {
@@ -582,6 +564,7 @@ function Simulation (props) {
             <Container properties={config}>
               <Batch 
                 control={props.control}
+                parameters={props.parameters}
                 setControl={props.setControl}
                 setTracker={props.setTracker}
                 addMeasure={props.addMeasure}
@@ -600,7 +583,8 @@ function Simulation (props) {
 
 const mapStateToProps = state => {
   const control = getControl(state);  
-  return { control };
+  const parameters = getParameters(state);
+  return { control, parameters };
 };
 
 export default connect(

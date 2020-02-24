@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     flexDirection: 'row'
   },
   button: {
-    padding: 5
+    margin: 5
   }
 });
 
@@ -30,9 +30,9 @@ function Controls(props) {
   // TODO - statics not strings
   return (
     <Card className={classes.card}>
-      <Button className={classes.card} variant="contained" onClick={() => { props.setControl('PAUSE'); }}><PauseIcon /></Button>
-      <Button className={classes.card} variant="contained" onClick={() => { props.setControl('PLAY'); }}><PlayArrowIcon /></Button>
-      <Button className={classes.card} variant="contained" onClick={() => { props.setControl('RESET'); }}><RefreshIcon /></Button>
+      <Button className={classes.button} variant="contained" onClick={() => { props.setControl('PAUSE'); }}><PauseIcon /></Button>
+      <Button className={classes.button} variant="contained" onClick={() => { props.setControl('PLAY'); }}><PlayArrowIcon /></Button>
+      <Button className={classes.button} variant="contained" onClick={() => { props.setControl('RESET'); }}><RefreshIcon /></Button>
     </Card>
   );
 }

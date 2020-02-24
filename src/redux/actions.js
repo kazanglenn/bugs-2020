@@ -1,4 +1,10 @@
-import { ADD_MEASURE, ADD_SPECIES_COUNT, RESET_MEASURE, RESET_SPECIES_COUNT, SET_CONTROL, SET_TRACKER } from "./actionTypes";
+import { 
+  ADD_MEASURE, RESET_MEASURE, 
+  ADD_SPECIES_COUNT, RESET_SPECIES_COUNT,
+  SET_CONTROL,
+  SET_TRACKER, 
+  SET_PARAMETERS, RESET_PARAMETERS 
+} from "./actionTypes";
 
 export const addMeasure = measure => ({
   type: ADD_MEASURE,
@@ -7,15 +13,15 @@ export const addMeasure = measure => ({
   }
 });
 
+export const resetMeasure = () => ({
+  type: RESET_MEASURE
+});
+
 export const addSpeciesCount = species => ({
   type: ADD_SPECIES_COUNT,
   payload: {
     species
   }
-});
-
-export const resetMeasure = () => ({
-  type: RESET_MEASURE
 });
 
 export const resetSpeciesCount = () => ({
@@ -34,4 +40,15 @@ export const setTracker = tracker => ({
   payload: {
     tracker
   }
+});
+
+export const setParameters = parameters => ({
+  type: SET_PARAMETERS,
+  payload: {
+    parameters
+  }
+});
+
+export const resetParameters = () => ({
+  type: RESET_PARAMETERS
 });

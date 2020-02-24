@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import SettingsIcon from '@material-ui/icons/Settings'; 
 import Drawer from '@material-ui/core/Drawer';
 import {Parameters} from '../Parameters';
 
@@ -46,7 +47,10 @@ export default function Header() {
           <Typography variant="h6" className={classes.title}>
             Bugs 2020
           </Typography>
-          <Button color="inherit" onClick={toggleDrawer(true)}>Parameters</Button>
+          {/* <Button color="inherit" onClick={toggleDrawer(true)}>Parameters</Button> */}
+          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="settings" onClick={toggleDrawer(true)}>
+            <SettingsIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Drawer anchor="right" open={state.parameters} onClose={toggleDrawer(false)}>
