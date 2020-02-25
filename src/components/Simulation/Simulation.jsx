@@ -15,6 +15,7 @@ import { contact } from './physics';
 // images
 import BugImage from '../../assets/flatworm.png';
 import AlgaeImage from '../../assets/algae_small.png';
+import BackgroundImage from '../../assets/background_water.png';
 
 /**
 * -----------------------------------------------
@@ -23,8 +24,9 @@ import AlgaeImage from '../../assets/algae_small.png';
 */
 const useStyles = makeStyles({
   card: props => ({
-    maxWidth: 800,
+    maxWidth: 1000,
     maxHeight: 500,
+    backgroundImage: 'url('+BackgroundImage+')',
     // TODO - fix this, use props, should work, see https://material-ui.com/styles/basics/
     // maxWidth: props.width,
     // maxHeight: props.height,
@@ -146,7 +148,7 @@ const AlgaeSprite = props => (
 const notice = <Text
   text="All Bugs Dead"
   anchor={0}
-  x={280}
+  x={380}
   y={250}
   style={new PIXI.TextStyle({
     fontSize: 30,
@@ -168,7 +170,7 @@ function initBugs(count) {
     direction: Math.random() * Math.PI * 2,
     tint: Math.round(Math.random() * 0xFFFFFF),
     // TODO - width/height from props
-    x: Math.random() * 800,
+    x: Math.random() * 1000,
     y: Math.random() * 500,
     _s: 0.6, // base speed - could add to parameters
     rotation: 0,
@@ -176,7 +178,7 @@ function initBugs(count) {
     width: 15,
     height: 30,
     energy: 400,
-    cycles: 0, // track age in cycls
+    cycles: 0, // track age in cycles
     breedThreshold: Math.floor(Math.random() * 1000) + 1000,
     // info to allow geneology reports
     geneology: {
@@ -202,7 +204,7 @@ function initBugs(count) {
 function initAlgae(count) {
   var algae = [...Array(count)].map(() => ({
     // TODO - width/height from props
-    x: Math.random() * 800,
+    x: Math.random() * 1000,
     y: Math.random() * 500,
     width: 12,
     height: 12,
@@ -298,7 +300,8 @@ const Batch = withPixiApp(class extends React.PureComponent {
         offspring.cycles = 0;
         // 'mutations'
         // TODO - make small single adjustments, allow slection of traits
-        if(Math.floor(Math.random() * 20) === 0) {  // 1 in n chance of a mutuation
+        // TODO - make mutation rate configurable
+        if(Math.floor(Math.random() * this.props.parameters.mutationRate) === 0) {  // 1 in n chance of a mutuation
           tracker.totalSpecies++;
           offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
           offspring.speed = item.speed + Math.floor(Math.random() * 3); // (1 + Math.random() * 10) * 0.5; // new speed
@@ -570,7 +573,7 @@ function Simulation (props) {
   // note passing functions to Batch component
   return (
     <Card className={classes.card}>
-      <Stage width={props.width} height={props.height} options={{ backgroundColor: props.background }}>
+      <Stage width={props.width} height={props.height} options={{ transparent: true }}>
         <Settings>
           {config => (
             <Container properties={config}>

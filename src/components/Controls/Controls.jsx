@@ -12,7 +12,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 800,
+    maxWidth: 1000,
     maxHeight: 100,
     margin: 5,
     display: 'flex',

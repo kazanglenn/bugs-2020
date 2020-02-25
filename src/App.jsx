@@ -33,7 +33,7 @@ export default function App()  {
         <div className={classes.offset}/>
         <Title/>
         <Controls/>
-        <Simulation width={800} height={500} background={0xFFFFFF}/>
+        <Simulation width={1000} height={500}/>
         <Tracker/>
         <SummaryChart/>
         <SpeciesChart/>

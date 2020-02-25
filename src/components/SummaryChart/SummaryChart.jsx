@@ -7,7 +7,7 @@ import { Line } from 'react-chartjs-2';
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 800,
+    maxWidth: 1000,
     maxHeight: 300,
     margin: 5
   }
@@ -87,7 +87,7 @@ function SummaryChart({ measures }) {
     <Card className={classes.card}>
       <Line
         data={chartdata}
-        width={800}
+        width={1000}
         height={300}
         options={options}
       />

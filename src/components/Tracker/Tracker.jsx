@@ -13,7 +13,7 @@ import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 800,
+    maxWidth: 1000,
     maxHeight: 200,
     margin: 5
   }

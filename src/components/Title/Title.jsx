@@ -8,7 +8,7 @@ import TitleImage from '../../assets/bugs2020.png';
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 800,
+    maxWidth: 1000,
     maxHeight: 500,
     margin: 5,
     display: 'flex',

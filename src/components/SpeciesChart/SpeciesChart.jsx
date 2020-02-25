@@ -8,7 +8,7 @@ import * as PIXI from "pixi.js";
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 800,
+    maxWidth: 1000,
     maxHeight: 500,
     margin: 5
   }
@@ -85,7 +85,7 @@ function SpeciesChart({ species }) {
     <Card className={classes.card}>
       <Line
         data={chartdata}
-        width={800}
+        width={1000}
         height={500}
         options={options}
       />
