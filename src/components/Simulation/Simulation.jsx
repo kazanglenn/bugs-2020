@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, setTracker, setParameters } from '../../redux/actions';
+import { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, setTracker } from '../../redux/actions';
 import { getControl, getParameters } from '../../redux/selectors';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
-import { Stage, Container, Text, withPixiApp, Sprite } from '@inlet/react-pixi';
+import { Stage, Container, Text, withPixiApp, Sprite, useApp } from '@inlet/react-pixi';
 import * as PIXI from "pixi.js";
+import { ReactViewport } from '../ReactViewport';
 import uuidv4 from 'uuid/v4';
 import { Bug } from '../Bug';
 
@@ -26,7 +27,7 @@ const useStyles = makeStyles({
   card: props => ({
     maxWidth: 1000,
     maxHeight: 500,
-    backgroundImage: 'url('+BackgroundImage+')',
+    backgroundImage: 'url(' + BackgroundImage + ')',
     // TODO - fix this, use props, should work, see https://material-ui.com/styles/basics/
     // maxWidth: props.width,
     // maxHeight: props.height,
@@ -59,7 +60,7 @@ var tracker = {
 const config = {
   // these are starting values
   bugs: 5,
-  algae: 400, // max = 800
+  algae: 500, // max = 800
 
   properties: {
     position: true,
@@ -109,14 +110,14 @@ const BugSprite = props => (
     image={BugImage}
     anchor={0.5}
     overwriteProps={true}
-    ignoreEvents={true} 
+    ignoreEvents={true}
     interactive={true}
     pointerdown={() => { // respond to click
       // TODO - create a popup or something on screen - this is to browser console
       console.log(props);
       // <Bug props/>
       // render()
-    }}   
+    }}
   />
 );
 
@@ -124,7 +125,7 @@ const BugSprite = props => (
 // TODO - use PI to derive angle rathen than pseudo grid system here
 // const positions = [[-15,-15],[-15,0],[15,15],[0,-15],[0,15],[15,-15],[15,0],[15,15]];
 // const positions = [[-12,-12],[-12,0],[12,12],[0,-12],[0,12],[12,-12],[12,0],[12,12]];
-const positions = [[-10,-10],[-10,0],[10,10],[0,-10],[0,10],[10,-10],[10,0],[10,10]];
+const positions = [[-10, -10], [-10, 0], [10, 10], [0, -10], [0, 10], [10, -10], [10, 0], [10, 10]];
 
 /**
 * -----------------------------------------------
@@ -136,7 +137,7 @@ const AlgaeSprite = props => (
     image={AlgaeImage}
     anchor={0.5}
     overwriteProps={true}
-    ignoreEvents={true} 
+    ignoreEvents={true}
   />
 );
 
@@ -190,7 +191,7 @@ function initBugs(count) {
 
   // inititialise species population tracker
   bugs.forEach((bug) => {
-    tracker.speciesCounts[bug.tint] = 1; 
+    tracker.speciesCounts[bug.tint] = 1;
   });
 
   return bugs;
@@ -222,7 +223,7 @@ function initAlgae(count) {
 const Batch = withPixiApp(class extends React.PureComponent {
   time = 0
   bounds = null
-  state = { 
+  state = {
     bugs: [],
     algae: [],
     bugCount: 0,
@@ -232,7 +233,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
   // see https://larry-price.com/blog/2018/06/27/how-to-use-getderivedstatefromprops-in-react-16-dot-3-plus/
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.bugCount === nextProps.bugCount && prevState.algaeCount === nextProps.algaeCount) {
-        return prevState
+      return prevState
     }
 
     var algae = initAlgae(nextProps.algaeCount);
@@ -267,7 +268,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
   // remove items without energy - 'deaths'
   deaths = (items) => {
     items.forEach((item, i) => {
-      if(item.energy === 0) {
+      if (item.energy === 0) {
         items.splice(i, 1); // other is at position i
         tracker.speciesCounts[item.tint]--;
       }
@@ -282,14 +283,14 @@ const Batch = withPixiApp(class extends React.PureComponent {
     // BUG PROCESSING
     bugs.forEach((item) => {
       // BREED
-      if(item.energy >= item.breedThreshold && bugs.length < this.props.parameters.maxBugs) {
+      if (item.energy >= item.breedThreshold && bugs.length < this.props.parameters.maxBugs) {
         tracker.totalBugs++;
-        item.energy = Math.round(item.energy/2) - this.props.parameters.breedingCost; // half, plus breeding cost
-        let offspring = Object.assign({}, item); // empty object to receive contents of item
+        item.energy = Math.round(item.energy / 2) - this.props.parameters.breedingCost; // half, plus breeding cost
+        var offspring = Object.assign({}, this.evolve(item)); // empty object to receive contents of item
         offspring.direction = Math.random() * Math.PI * 2; // new heading
         // geneology tracking
         // TODO - fix this, values being duplicated
-        let uuid = uuidv4();
+        var uuid = uuidv4();
         item.geneology.children.push(uuid);
         // object.assign does not do a deep copy
         offspring.geneology = {
@@ -297,17 +298,17 @@ const Batch = withPixiApp(class extends React.PureComponent {
           parent: item.geneology.id,
           children: [] // create blank array for child
         }
-        offspring.cycles = 0;
+        offspring.cycles = 0; // age = 0
         // 'mutations'
         // TODO - make small single adjustments, allow slection of traits
         // TODO - make mutation rate configurable
-        if(Math.floor(Math.random() * this.props.parameters.mutationRate) === 0) {  // 1 in n chance of a mutuation
-          tracker.totalSpecies++;
-          offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
-          offspring.speed = item.speed + Math.floor(Math.random() * 3); // (1 + Math.random() * 10) * 0.5; // new speed
-          offspring.tint = Math.round(Math.random() * 0xFFFFFF); // new colour to indicate change
-          offspring.breedThreshold += item.breedThreshold + Math.floor(Math.random() * 50) - 25; // variable breed speed, up or down
-        }
+        // if (Math.floor(Math.random() * this.props.parameters.mutationRate) === 0) {  // 1 in n chance of a mutuation
+        //   tracker.totalSpecies++;
+        //   offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
+        //   offspring.speed = item.speed + Math.floor(Math.random() * 3); // (1 + Math.random() * 10) * 0.5; // new speed
+        //   offspring.tint = Math.round(Math.random() * 0xFFFFFF); // new colour to indicate change
+        //   offspring.breedThreshold += item.breedThreshold + Math.floor(Math.random() * 50) - 25; // variable breed speed, up or down
+        // }
         bugs.push(offspring); // add adjusted copy
         tracker.speciesCounts[offspring.tint] ? tracker.speciesCounts[offspring.tint]++ : tracker.speciesCounts[offspring.tint] = 1; // track new births
       }
@@ -315,25 +316,25 @@ const Batch = withPixiApp(class extends React.PureComponent {
       // EAT BUGS
       bugs.forEach((other) => {
         // don't test against self, based on position of old value
-        if(item.tint !== other.tint && item.x !== other.x && item.y !== other.y) {
-          if(contact(item, other)) {
+        if (item.tint !== other.tint && item.x !== other.x && item.y !== other.y) {
+          if (contact(item, other)) {
             item.direction += (Math.random() - 0.5) * 0.75; // avoidance
             // consume the contacted bug
-            if(other.energy > 0) {
+            if (other.energy > 0) {
               item.energy += Math.min(500, other.energy); // take what there is
               other.energy = Math.max(0, other.energy - 500); // reduce to 0, or by 500
             }
           }
         }
-      }) 
+      })
 
       // EAT ALGAE
       var eatenAlgae = this.state.algae;
       eatenAlgae.forEach((other, i) => {
-        if(contact(item, other)) {
+        if (contact(item, other)) {
           item.direction += (Math.random() - 0.5) * 0.75; // consume clump
           // consume the contacted bug or algae
-          if(other.energy > 0) {
+          if (other.energy > 0) {
             item.energy += Math.min(500, other.energy); // take what there is
             other.energy = Math.max(0, other.energy - 500); // reduce to 0, or by 500, so eat algae in one go - faster
           }
@@ -357,6 +358,33 @@ const Batch = withPixiApp(class extends React.PureComponent {
     return (bugs);
   }
 
+  // check if should evolve, make small adjustment if so
+  evolve = (item) => {
+    var offspring = Object.assign({}, item);
+    if (Math.floor(Math.random() * this.props.parameters.mutationRate) === 0) {  // 1 in n chance of a mutuation
+      tracker.totalSpecies++;
+      // TODO - check upper/lower colour bounds
+      offspring.tint = item.tint + Math.round(Math.random() * 0xFFFF) - 0x8888; // new colour to indicate change
+
+      // make one small change
+      var change = Math.round(Math.random() * 2);
+      switch (change) {
+        case 0:
+          offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
+          break;
+        case 1:
+          offspring.speed = item.speed + Math.floor(Math.random() * 4) - 2; // allow slow down too
+          break;
+        case 2:
+          offspring.breedThreshold += item.breedThreshold + Math.floor(Math.random() * 20) - 10; // variable breed speed, up or down
+          break;
+        default:
+          console.log("no change ...", change);
+      }
+    }
+    return offspring;
+  }
+
   algaeLogic = (items) => {
     var algae = this.deaths(items); // first, check once over all items, remove any with 0 energy
 
@@ -364,10 +392,10 @@ const Batch = withPixiApp(class extends React.PureComponent {
     algae.forEach((item) => {
       // BREED
       // TODO - limit to edge algae, or perhaps sample pop if large, to speed processing
-      if(item.energy >= this.props.parameters.algaeBreedThreshold && algae.length < this.props.parameters.maxAlgae) {
-        let offspring = Object.assign({}, item); // empty object to receive contents of item
+      if (item.energy >= this.props.parameters.algaeBreedThreshold && algae.length < this.props.parameters.maxAlgae) {
+        var offspring = Object.assign({}, item); // empty object to receive contents of item
 
-        let index = Math.floor(Math.random() * positions.length);
+        var index = Math.floor(Math.random() * positions.length);
         // randomness creates drift from pure grid, lines reminisent of algae
         offspring.x += positions[index][0] + Math.floor(Math.random() * 8) - 4;
         offspring.y += positions[index][1] + Math.floor(Math.random() * 8) - 4;
@@ -388,18 +416,18 @@ const Batch = withPixiApp(class extends React.PureComponent {
 
         // check overlap - if overlap, do not breed (do no add offpsring) until space
         let isContact = false;
-        for(var i = 0; i < algae.length; i++) { // don't use foreach so can break
-          if(contact(offspring, algae[i])) {
+        for (var i = 0; i < algae.length; i++) { // don't use foreach so can break
+          if (contact(offspring, algae[i])) {
             isContact = true;
             break;
           }
         }
 
         // no overlap so create
-        if(!isContact) {
+        if (!isContact) {
           // only take energy away when space to breed
-          item.energy = Math.round(item.energy/2); // half
-          offspring.energy = Math.round(item.energy/2); // half
+          item.energy = Math.round(item.energy / 2); // half
+          offspring.energy = Math.round(item.energy / 2); // half
           algae.push(offspring); // add adjusted copy
         }
       }
@@ -418,7 +446,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
       // not filtering - need to reach each for all to render
       bugs: this.bugLogic(bugs, algae).map((item, i) => {
         // perform basic movement operations here, causes rendering to take place
-        
+
         // clone item
         var newItem = Object.assign({}, item);
 
@@ -442,17 +470,17 @@ const Batch = withPixiApp(class extends React.PureComponent {
 
     this.setState(({ algae }) => ({
       algae: this.algaeLogic(algae)
-    }));  
+    }));
 
     // stop processing, all dead
-    if(this.state.bugs.length === 0) {
+    if (this.state.bugs.length === 0) {
       this.props.app.ticker.stop();
     };
-        
+
     tracker.ticks++;
 
     // every nth tick, record bug volumes by species - not too oftem, will slow processing
-    if(tracker.ticks % this.props.parameters.sampleInterval === 0) {
+    if (tracker.ticks % this.props.parameters.sampleInterval === 0) {
 
       // add population measures to redux store
       let sample = {
@@ -470,19 +498,19 @@ const Batch = withPixiApp(class extends React.PureComponent {
       // periodically trim tracker species counts of 0 values
       Object.entries(tracker.speciesCounts).forEach(([key, value]) => {
         // should not need undefined test, not sure where undefined coming from
-        if(tracker.speciesCounts[key] === 0 || key === 'undefined') {
+        if (tracker.speciesCounts[key] === 0 || key === 'undefined') {
           delete tracker.speciesCounts[key];
         }
-      });    
-         
+      });
+
       // normalise species counts into standard structure to make plotting easier
       // const normal = Object.keys(counts).map((name) => {
       const normal = Object.keys(tracker.speciesCounts).map((name) => {
-        return {species: name, count: tracker.speciesCounts[name]}
+        return { species: name, count: tracker.speciesCounts[name] }
       });
 
       // wrap up species counts with a cycle indicator
-      const species = {cycle: tracker.ticks, counts: normal}
+      const species = { cycle: tracker.ticks, counts: normal }
 
       // add species counts to redux store
       this.props.addSpeciesCount(species);
@@ -495,12 +523,12 @@ const Batch = withPixiApp(class extends React.PureComponent {
     var valgae = this.state.algae.map(props => <AlgaeSprite {...props} />);
     var vbugs = this.state.bugs.map(props => <BugSprite {...props} />);
 
-    var message = 
-            "        Cycle: ".concat(tracker.ticks)
-    .concat("\n Current Bugs: ").concat(this.state.bugs.length)
-    .concat("\nCurrent Algae: ").concat(this.state.algae.length)
-    .concat("\n   Total Bugs: ").concat(tracker.totalBugs)
-    .concat("\nTotal Species: ").concat(tracker.totalSpecies);
+    var message =
+      "        Cycle: ".concat(tracker.ticks)
+        .concat("\n Current Bugs: ").concat(this.state.bugs.length)
+        .concat("\nCurrent Algae: ").concat(this.state.algae.length)
+        .concat("\n   Total Bugs: ").concat(tracker.totalBugs)
+        .concat("\nTotal Species: ").concat(tracker.totalSpecies);
 
     // show the 'ticks' on screen - cycle
     var text = <Text
@@ -554,7 +582,7 @@ const Batch = withPixiApp(class extends React.PureComponent {
         console.log("command not recognised ...");
     }
 
-    if(this.state.bugs.length > 0) {
+    if (this.state.bugs.length > 0) {
       return [...valgae, ...vbugs, text];
     }
     return [...valgae, ...vbugs, text, notice];
@@ -566,38 +594,41 @@ const Batch = withPixiApp(class extends React.PureComponent {
 * Top Level World Component
 * -----------------------------------------------
 */
-function Simulation (props) {  
+function Simulation(props) {
 
   const classes = useStyles(props);
+  // const app = useApp();
 
   // note passing functions to Batch component
   return (
     <Card className={classes.card}>
       <Stage width={props.width} height={props.height} options={{ transparent: true }}>
-        <Settings>
-          {config => (
-            <Container properties={config}>
-              <Batch 
-                control={props.control}
-                parameters={props.parameters}
-                setControl={props.setControl}
-                setTracker={props.setTracker}
-                addMeasure={props.addMeasure}
-                addSpeciesCount={props.addSpeciesCount}
-                resetMeasure={props.resetMeasure}
-                resetSpeciesCount={props.resetSpeciesCount}
-                bugCount={config.bugs}
-                algaeCount={config.algae}/>
-            </Container>
-          )}
-        </Settings>
+        {/* <ReactViewport app={app}> */}
+          <Settings>
+            {config => (
+              <Container properties={config}>
+                <Batch
+                  control={props.control}
+                  parameters={props.parameters}
+                  setControl={props.setControl}
+                  setTracker={props.setTracker}
+                  addMeasure={props.addMeasure}
+                  addSpeciesCount={props.addSpeciesCount}
+                  resetMeasure={props.resetMeasure}
+                  resetSpeciesCount={props.resetSpeciesCount}
+                  bugCount={config.bugs}
+                  algaeCount={config.algae} />
+              </Container>
+            )}
+          </Settings>
+        {/* </ReactViewport> */}
       </Stage>
     </Card>
   );
 }
 
 const mapStateToProps = state => {
-  const control = getControl(state);  
+  const control = getControl(state);
   const parameters = getParameters(state);
   return { control, parameters };
 };

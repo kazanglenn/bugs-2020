@@ -73,7 +73,8 @@ function SpeciesChart({ species }) {
       backgroundColor: colourString,
       borderWidth: 1,
       pointRadius: 1,
-      pointHoverRadius: 1
+      pointHoverRadius: 1,
+      spanGaps: false
     }
   });
 
