@@ -52,7 +52,6 @@ function SpeciesChart({ species }) {
   const classes = useStyles();
 
   // species data needs to be pivoted from by cycle to by species to chart
-  // TODO - use reducer for this
   // TODO - filter to top n species for efficiency
   var chartData = [];
   species.forEach(element => {

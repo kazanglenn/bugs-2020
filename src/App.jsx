@@ -1,16 +1,11 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
+// material-ui components
 import { ThemeProvider } from '@material-ui/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
 
 // custom components
-import {Header} from './components/Header';
-import {Title} from './components/Title';
-import {Simulation} from './components/Simulation';
-import {SummaryChart} from './components/SummaryChart';
-import {SpeciesChart} from './components/SpeciesChart';
-import {Controls} from './components/Controls';
-import {Tracker} from './components/Tracker';
+import { Header } from './components/Header';
 
 const theme = createMuiTheme({
   palette: {
@@ -18,25 +13,12 @@ const theme = createMuiTheme({
   }
 });
 
-const useStyles = makeStyles(theme => ({
-  offset: theme.mixins.toolbar,
-}));
-
-export default function App()  {
-  
-  const classes = useStyles();
+export default function App() {
 
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
-        <Header/>
-        <div className={classes.offset}/>
-        <Title/>
-        <Controls/>
-        <Simulation width={1000} height={500}/>
-        <Tracker/>
-        <SummaryChart/>
-        <SpeciesChart/>
+        <Header />
       </ThemeProvider>
     </div>
   );

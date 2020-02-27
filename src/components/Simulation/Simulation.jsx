@@ -299,16 +299,6 @@ const Batch = withPixiApp(class extends React.PureComponent {
           children: [] // create blank array for child
         }
         offspring.cycles = 0; // age = 0
-        // 'mutations'
-        // TODO - make small single adjustments, allow slection of traits
-        // TODO - make mutation rate configurable
-        // if (Math.floor(Math.random() * this.props.parameters.mutationRate) === 0) {  // 1 in n chance of a mutuation
-        //   tracker.totalSpecies++;
-        //   offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
-        //   offspring.speed = item.speed + Math.floor(Math.random() * 3); // (1 + Math.random() * 10) * 0.5; // new speed
-        //   offspring.tint = Math.round(Math.random() * 0xFFFFFF); // new colour to indicate change
-        //   offspring.breedThreshold += item.breedThreshold + Math.floor(Math.random() * 50) - 25; // variable breed speed, up or down
-        // }
         bugs.push(offspring); // add adjusted copy
         tracker.speciesCounts[offspring.tint] ? tracker.speciesCounts[offspring.tint]++ : tracker.speciesCounts[offspring.tint] = 1; // track new births
       }
