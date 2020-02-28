@@ -30,8 +30,8 @@ function Tracker({tracker}) {
           <TableHead>
             <TableRow>
               <TableCell align="right">Cycle</TableCell>
-              <TableCell align="right">Bugs</TableCell>
-              <TableCell align="right">Algae</TableCell>
+              <TableCell align="right">Current Bugs</TableCell>
+              <TableCell align="right">Current Algae</TableCell>
               <TableCell align="right">Total Bugs</TableCell>
               <TableCell align="right">Total Species</TableCell>
             </TableRow>

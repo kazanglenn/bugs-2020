@@ -1,10 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import TitleImage from '../../assets/bugs2020.png';
 
 const useStyles = makeStyles({
   card: {
@@ -15,7 +13,9 @@ const useStyles = makeStyles({
     flexDirection: 'row'
   },
   content: {
-    width: "80%"
+    flex: '1 0 auto',
+    margin: 10,
+    width: "90%"
   },
   media: {
     margin: 5,
@@ -30,14 +30,15 @@ export default function Title() {
 
   return (
     <Card className={classes.card}>
-      <CardMedia
-        className={classes.media}
-        image={TitleImage}
-        title="Bugs 2020"
-      />
       <CardContent className={classes.content}>
         <Typography variant="body1" color="textSecondary" component="p">
-          Exploring machine learning and evolutionary adaptation by observing synthetic entities in a dynamic environment.
+          The environment is a chaotic system, and the 'bugs' are selected by their ability to survive in this system. Those that can consume
+          sufficient energy in the form of the green 'algae' or other 'bugs' will reproduce and persist. Those that do not die off.
+          Population oscillations can be observed as selection pushes towards equilibrium.
+          There are parameters that can be adjusted to experiment with the system. These can be adjusted as it is running.
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p" align="right">
+            Kazan Glenn
         </Typography>
       </CardContent>
     </Card>

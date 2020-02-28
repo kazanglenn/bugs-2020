@@ -59,7 +59,9 @@ export function contact(r1, r2) {
   
   
   // not used yet
-  export function wrap(item, xbounds, ybounds, width, height) {
+  export function wrap(original, xbounds, ybounds, width, height) {
+    var item = Object.assign({}, original);
+
     if (item.x < xbounds) {
       item.x += width;
     }
@@ -72,4 +74,5 @@ export function contact(r1, r2) {
     else if (item.y > ybounds + height) {
       item.y -= height;
     }
+    return item;
   }

@@ -5,8 +5,8 @@ const initTracker = {
   ticks: 0,
   bugs: 0,
   algae: 0,
-  totalBugs: 10,
-  totalSpecies: 10
+  totalBugs: 5,
+  totalSpecies: 5
 }
 
 const tracker = (state = initTracker, action) => {

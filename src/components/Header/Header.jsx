@@ -25,11 +25,8 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 // custom components
 import { Parameters } from '../Parameters';
 import { Title } from '../Title';
-import { Simulation } from '../Simulation';
-import { SummaryChart } from '../SummaryChart';
-import { SpeciesChart } from '../SpeciesChart';
-import { Controls } from '../Controls';
-import { Tracker } from '../Tracker';
+import { About } from '../About';
+import { SimWrapper } from '../SimWrapper';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -103,15 +100,15 @@ export default function Header() {
           { text: 'Simulation', icon: <BugReportIcon />, href: '/simulation' },
           { text: 'About', icon: <InfoIcon />, href: '/about' },
         ].map((entry, index) => (
-          <ListItemLink to={entry.href} primary={entry.text} icon={entry.icon} />
+          <ListItemLink key={index} to={entry.href} primary={entry.text} icon={entry.icon} />
         ))}
       </List>
     </div>
   );
 
   return (
-    <MemoryRouter initialEntries={['/about']} initialIndex={0}>
-      
+    <MemoryRouter initialEntries={['/simulation']} initialIndex={0}>
+
       <div className={classes.root}>
         <AppBar position="fixed">
           <Toolbar>
@@ -136,24 +133,17 @@ export default function Header() {
 
       <Switch>
         <Route exact path="/">
-          {/* <Home /> */}
-          <div/>
+          <div className={classes.offset} />
+          <Title />
         </Route>
         <Route exact path="/simulation">
           <div className={classes.offset} />
-          <div>
-            <Controls />
-            <Simulation width={1000} height={500} />
-            <Tracker />
-            <SummaryChart />
-            <SpeciesChart />
-          </div>
+          <SimWrapper />
         </Route>
         <Route path="/about">
           <div className={classes.offset} />
-          <div>
-            <Title />
-          </div>
+          <Title />
+          <About />
         </Route>
       </Switch>
 

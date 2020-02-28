@@ -150,15 +150,6 @@ const smallMarks = [
   },
 ];
 
-function valuetext(value) {
-  return `${value}`;
-}
-
-// maxBugs: 200,
-// breedingCost: 100,
-// maxAlgae: 800,
-// algaeBreedThreshold: 100,
-
 function Parameters(props) {
 
   const classes = useStyles();
