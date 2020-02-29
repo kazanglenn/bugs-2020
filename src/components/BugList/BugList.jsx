@@ -39,6 +39,7 @@ function BugList({ bugs }) {
               <TableCell align="right">Species</TableCell>
               <TableCell align="right">Age</TableCell>
               <TableCell align="right">Energy</TableCell>
+              <TableCell align="right">Offspring</TableCell>
               <TableCell align="right">Speed</TableCell>
               <TableCell align="right">Turning Speed</TableCell>
               <TableCell align="right">Breed Threshold</TableCell>
@@ -51,6 +52,7 @@ function BugList({ bugs }) {
                 <TableCell align="right">{bug.tint}</TableCell>
                 <TableCell align="right">{bug.cycles}</TableCell>
                 <TableCell align="right">{bug.energy}</TableCell>
+                <TableCell align="right">{bug.geneology.children.length}</TableCell>
                 <TableCell align="right">{bug.speed}</TableCell>
                 <TableCell align="right">{(bug.turningSpeed).toFixed(6)}</TableCell>
                 <TableCell align="right">{bug.breedThreshold}</TableCell>

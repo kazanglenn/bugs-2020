@@ -124,7 +124,8 @@ const Engine = withPixiApp(class extends React.Component {
       if (b.energy === 0) {
         this.props.bugs.splice(i, 1); // other is at position i
         // this.props.deleteBug(b); // slow but correct
-        tracker.speciesCounts[b.tint]--;
+        // tracker.speciesCounts[b.tint]--;
+        tracker.speciesCounts[b.tint] ? tracker.speciesCounts[b.tint]-- : tracker.speciesCounts[b.tint] = 0; // may not exist if first org
       }
     });
 
@@ -134,13 +135,13 @@ const Engine = withPixiApp(class extends React.Component {
       // BREED
       if (item.energy >= item.breedThreshold && this.props.bugs.length < this.props.parameters.maxBugs) {
         tracker.totalBugs++;
-        item.energy = Math.round(item.energy / 2) - this.props.parameters.breedingCost; // half, plus breeding cost
         var offspring = Object.assign({}, this.evolve(item)); // empty object to receive contents of item
+        item.energy = Math.round(item.energy * 0.75) - this.props.parameters.breedingCost; // lose 25%, plus breeding cost, for breeding
+        offspring.energy = Math.round(item.energy * 0.25); // offspring gets 25% of energy
         offspring.direction = Math.random() * Math.PI * 2; // new heading
         // geneology tracking
-        // TODO - fix this, values being duplicated
         var uuid = uuidv4();
-        item.geneology.children.push(uuid);
+        item.geneology.children.push(uuid); // parent tracks child
         // object.assign does not do a deep copy
         offspring.geneology = {
           id: uuid,
@@ -148,6 +149,9 @@ const Engine = withPixiApp(class extends React.Component {
           children: [] // create blank array for child
         }
         offspring.cycles = 0; // age = 0
+        // start small, grow in size
+        offspring.width = 5;
+        offspring.height = 10;
         this.props.bugs.push(offspring); // add adjusted copy
         // this.props.addBug(offspring); // very slow
         tracker.speciesCounts[offspring.tint] ? tracker.speciesCounts[offspring.tint]++ : tracker.speciesCounts[offspring.tint] = 1; // track new births
@@ -247,10 +251,19 @@ const Engine = withPixiApp(class extends React.Component {
 
     // ALGAE PROCESSING
     this.props.algae.forEach((item) => {
+      // GROW - stagger across algae
+      if(item.width < 25 && tracker.ticks % 25 === 0 && Math.floor(Math.random() * 4) === 0) {
+        item.width++;
+        item.height++;
+      }
       // BREED
       // TODO - limit to edge algae, or perhaps sample pop if large, to MASSIVELY speed processing
       if (item.energy >= this.props.parameters.algaeBreedThreshold && this.props.algae.length < this.props.parameters.maxAlgae) {
         var offspring = Object.assign({}, item); // empty object to receive contents of item
+
+        // start small, allow for growth
+        offspring.width = 5;
+        offspring.height = 5;
 
         var index = Math.floor(Math.random() * positions.length);
         // randomness creates drift from pure grid, lines reminisent of algae
@@ -307,6 +320,12 @@ const Engine = withPixiApp(class extends React.Component {
     // re-rendering causes algae to work too
     this.props.setBugs(this.props.bugs.map((bug, i) => {
       bug.cycles++;
+      // grow until width 15
+      // TODO - parameterise init and max sizes
+      if(bug.width < 22 && tracker.ticks % 100 === 0) {
+        bug.width++;
+        bug.height+=2;
+      }
       return bug;
     }));
 
