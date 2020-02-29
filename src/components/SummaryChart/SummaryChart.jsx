@@ -5,12 +5,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import { Line } from 'react-chartjs-2';
 
+
 const useStyles = makeStyles({
-  card: {
+  card: props => ({
     maxWidth: 1000,
-    maxHeight: 600,
+    maxHeight: props.height,
     margin: 5
-  }
+  })
 });
 
 const options = {
@@ -54,9 +55,11 @@ const options = {
   }
 }
 
-function SummaryChart({ measures }) {
+function SummaryChart(props) {
 
-  const classes = useStyles();
+  const classes = useStyles(props);
+
+  let measures = props.measures; // alias
 
   var chartdata = {
     datasets: [
@@ -88,7 +91,7 @@ function SummaryChart({ measures }) {
       <Line
         data={chartdata}
         width={1000}
-        height={600}
+        height={props.height}
         options={options}
       />
     </Card>

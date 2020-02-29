@@ -73,13 +73,17 @@ export default function SimWrapper() {
       <TabPanel value={value} index={0}>
         <Controls />
         <Simulation width={1000} height={500}/>
+        <SummaryChart height={200}/>
         <Tracker />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <SummaryChart />
+        <SummaryChart height={700}/>
       </TabPanel>
       <TabPanel value={value} index={2}>
         <SpeciesChart />
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        <BugList />
       </TabPanel>
     </div>
   );

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, setTracker } from '../../redux/actions';
 import { setAlgae, addAlgae, deleteAlgae, setBugs, addBug, deleteBug } from '../../redux/actions';
 import { getControl, getParameters, getAlgae, getBugs } from '../../redux/selectors';
-import { Stage, Container, Text, withPixiApp, Sprite, useApp } from '@inlet/react-pixi';
+import { Text, withPixiApp, Sprite, useApp } from '@inlet/react-pixi';
 import * as PIXI from "pixi.js";
 import uuidv4 from 'uuid/v4';
 
@@ -109,7 +109,6 @@ const Engine = withPixiApp(class extends React.Component {
     this.props.app.ticker.add(this.tick);
 
     console.log("engine props => ", this.props)
-    console.log("engine state => ", this.state)
   }
 
 
@@ -118,25 +117,22 @@ const Engine = withPixiApp(class extends React.Component {
   }
 
 
-  // remove items without energy - 'deaths'
-  deaths = (items) => {
-    items.forEach((item, i) => {
-      if (item.energy === 0) {
-        items.splice(i, 1); // other is at position i
-        if(item.tint) { tracker.speciesCounts[item.tint]-- };
+  // direct manipulation version
+  bugLogic = () => {
+    // first, check once over all items, remove any with 0 energy
+    this.props.bugs.forEach((b, i) => {
+      if (b.energy === 0) {
+        this.props.bugs.splice(i, 1); // other is at position i
+        // this.props.deleteBug(b); // slow but correct
+        tracker.speciesCounts[b.tint]--;
       }
     });
-    return items;
-  }
 
-
-  bugLogic = (vbugs) => {
-    var bugs = this.deaths(vbugs); // first, remove any bugs with 0 energy
 
     // BUG PROCESSING
-    bugs.forEach((item) => {
+    this.props.bugs.forEach((item) => {
       // BREED
-      if (item.energy >= item.breedThreshold && bugs.length < this.props.parameters.maxBugs) {
+      if (item.energy >= item.breedThreshold && this.props.bugs.length < this.props.parameters.maxBugs) {
         tracker.totalBugs++;
         item.energy = Math.round(item.energy / 2) - this.props.parameters.breedingCost; // half, plus breeding cost
         var offspring = Object.assign({}, this.evolve(item)); // empty object to receive contents of item
@@ -152,13 +148,13 @@ const Engine = withPixiApp(class extends React.Component {
           children: [] // create blank array for child
         }
         offspring.cycles = 0; // age = 0
-        bugs.push(offspring); // add adjusted copy
-        // this.props.addBug(offspring);
+        this.props.bugs.push(offspring); // add adjusted copy
+        // this.props.addBug(offspring); // very slow
         tracker.speciesCounts[offspring.tint] ? tracker.speciesCounts[offspring.tint]++ : tracker.speciesCounts[offspring.tint] = 1; // track new births
       }
 
-      // EAT BUGS
-      bugs.forEach((other) => {
+      // EAT OTHER BUGS
+      this.props.bugs.forEach((other) => {
         // don't test against self, based on position of old value
         if (item.tint !== other.tint && item.x !== other.x && item.y !== other.y) {
           if (contact(item, other)) {
@@ -173,13 +169,14 @@ const Engine = withPixiApp(class extends React.Component {
       })
 
       // EAT ALGAE
-      var eatenAlgae = this.props.algae;
-      eatenAlgae.forEach((algae, i) => {
+      this.props.algae.forEach((algae, i) => {
         if (contact(item, algae)) {
           item.direction += (Math.random() - 0.5) * 0.75; // consume clump, opportunity for intelligence
           // consume the entire contacted algae - no updates
-          item.energy += algae.energy; // take what there is
-          this.props.deleteAlgae(algae);
+          item.energy += algae.energy; // take what energy there is
+          this.props.algae.splice(i, 1); // direct manipulation
+          // this.props.deleteAlgae(algae); // slow but correct
+          // console.log("consumed",algae.id);
         }
       });
 
@@ -188,16 +185,25 @@ const Engine = withPixiApp(class extends React.Component {
       item.y = item.y + Math.cos(item.direction) * (item.speed * item._s);
       item.rotation = -item.direction + Math.PI;
       item.direction = item.direction + item.turningSpeed * (Math.random() - 0.5) * 0.5;
+      // wrap testing
+      if (item.x < this.bounds.x) {
+        item.x += this.bounds.width;
+      }
+      else if (item.x > this.bounds.x + this.bounds.width) {
+        item.x -= this.bounds.width;
+      }
+      if (item.y < this.bounds.y) {
+        item.y += this.bounds.height;
+      }
+      else if (item.y > this.bounds.y + this.bounds.height) {
+        item.y -= this.bounds.height;
+      }      
 
       // ENERGY LOSS
-      item.energy = Math.max(0, item.energy - (2 + Math.ceil(item.speed))); // slow energy loss with movement, will need to eat
-
-      // TRACK AGE
-      item.cycles++;
+      item.energy = Math.max(0, item.energy - (2 + Math.ceil(item.speed))); // energy loss with movement and speed, will need to eat
     })
-
-    return (bugs);
   }
+
 
 
   // check if should evolve, make small adjustment if so
@@ -228,14 +234,22 @@ const Engine = withPixiApp(class extends React.Component {
   }
 
   
-  algaeLogic = (items) => {
-    var algae = this.deaths(items); // first, check once over all items, remove any with 0 energy
+  // direct manipulation - no array replacement
+  algaeLogic = () => {
+    // first, check once over all items, remove any with 0 energy
+    this.props.algae.forEach((a, i) => {
+      if (a.energy === 0) {
+        this.props.algae.splice(i, 1); // dead algae is at position i
+        // this.props.deleteAlgae(a); // slow but correct
+      }
+    });
+
 
     // ALGAE PROCESSING
-    algae.forEach((item) => {
+    this.props.algae.forEach((item) => {
       // BREED
       // TODO - limit to edge algae, or perhaps sample pop if large, to MASSIVELY speed processing
-      if (item.energy >= this.props.parameters.algaeBreedThreshold && algae.length < this.props.parameters.maxAlgae) {
+      if (item.energy >= this.props.parameters.algaeBreedThreshold && this.props.algae.length < this.props.parameters.maxAlgae) {
         var offspring = Object.assign({}, item); // empty object to receive contents of item
 
         var index = Math.floor(Math.random() * positions.length);
@@ -243,7 +257,7 @@ const Engine = withPixiApp(class extends React.Component {
         offspring.x += positions[index][0] + Math.floor(Math.random() * 8) - 4;
         offspring.y += positions[index][1] + Math.floor(Math.random() * 8) - 4;
 
-        // can push this into a function - used for bugs as well
+        // edge wrap detection - move to function
         if (offspring.x < this.bounds.x) {
           offspring.x += this.bounds.width;
         }
@@ -259,8 +273,8 @@ const Engine = withPixiApp(class extends React.Component {
 
         // check overlap - if overlap, do not breed (do no add offpsring) until space
         let isContact = false;
-        for (var i = 0; i < algae.length; i++) { // don't use foreach so can break
-          if (contact(offspring, algae[i])) {
+        for (var i = 0; i < this.props.algae.length; i++) { // don't use foreach so can break on first hit
+          if (contact(offspring, this.props.algae[i])) {
             isContact = true;
             break;
           }
@@ -269,9 +283,10 @@ const Engine = withPixiApp(class extends React.Component {
         // no overlap so create
         if (!isContact) {
           // only take energy away when space to breed
-          item.energy = Math.round(item.energy / 2); // half
+          item.energy = Math.round(item.energy / 2); // half - energy updated without redux update
           offspring.energy = Math.round(item.energy / 2); // half
-          algae.push(offspring); // add adjusted copy
+          this.props.algae.push(offspring); // add adjusted copy
+          // this.props.addAlgae(offspring); // slow but correct
         }
       }
 
@@ -279,33 +294,21 @@ const Engine = withPixiApp(class extends React.Component {
       // put a cap on energy stored based on breeding threshold - must have that much
       item.energy = Math.min(this.props.parameters.algaeBreedThreshold, item.energy + 1);
     })
-
-    return algae;
   }
 
 
-  tick = () => {
-    // TODO - update to use wrap
-    this.props.setBugs(this.bugLogic(this.props.bugs).map((item, i) => {
-      // clone item
-      var newItem = Object.assign({}, item);
-      // check bounds of environment not exceeded, wrap around if so
-      if (newItem.x < this.bounds.x) {
-        newItem.x += this.bounds.width;
-      }
-      else if (newItem.x > this.bounds.x + this.bounds.width) {
-        newItem.x -= this.bounds.width;
-      }
-      if (newItem.y < this.bounds.y) {
-        newItem.y += this.bounds.height;
-      }
-      else if (newItem.y > this.bounds.y + this.bounds.height) {
-        newItem.y -= this.bounds.height;
-      }
-      return { ...item, ...newItem };
-    }));
 
-    this.props.setAlgae(this.algaeLogic(this.props.algae));
+  tick = () => {
+    this.bugLogic();
+    this.algaeLogic();
+
+    // doing this here to update state to cause re-rendering
+    // see if way to force re-render witht replacing bug array
+    // re-rendering causes algae to work too
+    this.props.setBugs(this.props.bugs.map((bug, i) => {
+      bug.cycles++;
+      return bug;
+    }));
 
     // stop processing, all dead
     if (this.props.bugs.length === 0) {
@@ -339,7 +342,6 @@ const Engine = withPixiApp(class extends React.Component {
       });
 
       // normalise species counts into standard structure to make plotting easier
-      // const normal = Object.keys(counts).map((name) => {
       const normal = Object.keys(tracker.speciesCounts).map((name) => {
         return { species: name, count: tracker.speciesCounts[name] }
       });

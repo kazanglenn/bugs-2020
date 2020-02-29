@@ -22,12 +22,9 @@ import Engine from './Engine';
 */
 const useStyles = makeStyles({
   card: props => ({
-    maxWidth: 1000,
-    maxHeight: 500,
+    maxWidth: props.width,
+    maxHeight: props.height,
     backgroundImage: 'url(' + BackgroundImage + ')',
-    // TODO - fix this, use props, should work, see https://material-ui.com/styles/basics/
-    // maxWidth: props.width,
-    // maxHeight: props.height,
     margin: 5,
     display: 'flex',
     flexDirection: 'row'
