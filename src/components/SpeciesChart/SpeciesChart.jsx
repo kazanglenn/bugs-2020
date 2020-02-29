@@ -16,10 +16,14 @@ const useStyles = makeStyles({
 
 const options = {
   responsive: true,
-  animation: false,
+  // animation: false,
   scales: {
     xAxes: [{
-      display: true,
+      scaleLabel: {
+        display: true,
+        labelString: 'Cycle',
+        fontColor: 'rgb(63, 63, 191, 0.9)'
+      },
       type: 'linear',
       position: 'bottom',
       ticks: {
@@ -27,7 +31,11 @@ const options = {
       }
     }],
     yAxes: [{
-      display: true,
+      scaleLabel: {
+        display: true,
+        labelString: '# of Bugs',
+        fontColor: 'rgb(63, 63, 191, 0.9)'
+      },
       position: 'left'
     }]
   },
