@@ -11,6 +11,7 @@ export function initAlgae(count) {
       // TODO - width/height from props
       x: Math.round(Math.random() * 1000),
       y: Math.round(Math.random() * 500),
+      rotation: Math.random() * Math.PI * 2,
       // width: Math.round(Math.random() * 7 + 5),
       width: 12,
       height: 12,

@@ -7,7 +7,7 @@ const initParameters = {
   maxAlgae: 1500,
   algaeBreedThreshold: 100,
   sampleInterval: 100, // number of ticks before counting species and other metrics taken
-  mutationRate: 20, // 1 in n chance of mutation taking place, lower the number, higher the rate
+  mutationRate: 10, // 1 in n chance of mutation taking place, lower the number, higher the rate
 }
 
 const parameters = (state = initParameters, action) => {
