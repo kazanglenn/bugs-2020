@@ -1,7 +1,5 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-// import { connect } from 'react-redux';
-// import { getBug } from "../../redux/selectors";
 // import Card from '@material-ui/core/Card';
 import Modal from '@material-ui/core/Modal';
 

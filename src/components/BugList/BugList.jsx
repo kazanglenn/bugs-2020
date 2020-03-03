@@ -13,6 +13,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
+// project components
+import Bug from '../Bug';
+
 
 const useStyles = makeStyles({
   card: {
@@ -42,7 +45,8 @@ function BugList({ bugs }) {
               <TableCell align="right">Offspring</TableCell>
               <TableCell align="right">Speed</TableCell>
               <TableCell align="right">Turning Speed</TableCell>
-              <TableCell align="right">Breed Threshold</TableCell>
+              <TableCell align="right">Breed Size</TableCell>
+              <TableCell align="right">Breed Energy</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -55,6 +59,7 @@ function BugList({ bugs }) {
                 <TableCell align="right">{bug.geneology.children.length}</TableCell>
                 <TableCell align="right">{bug.speed}</TableCell>
                 <TableCell align="right">{(bug.turningSpeed).toFixed(6)}</TableCell>
+                <TableCell align="right">{bug.breedSize}</TableCell>
                 <TableCell align="right">{bug.breedThreshold}</TableCell>
               </TableRow>
             ))}

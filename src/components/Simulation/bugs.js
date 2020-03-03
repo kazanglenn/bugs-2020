@@ -11,7 +11,7 @@ export function initBugs(count) {
     turningSpeed: Math.random() - 0.8,
     direction: Math.random() * Math.PI * 2,
     tint: Math.round(Math.random() * 0xFFFFFF),
-    // TODO - width/height from props
+    // TODO - take width/height from props
     x: Math.random() * 1000,
     y: Math.random() * 500,
     _s: 0.6, // base speed - could add to parameters
@@ -21,6 +21,7 @@ export function initBugs(count) {
     height: 30,
     energy: 400,
     cycles: 0, // track age in cycles
+    breedSize: Math.floor(Math.random() * 10) + 10, // minimum width before breeding
     breedThreshold: Math.floor(Math.random() * 1000) + 1000,
     // info to allow geneology reports
     geneology: {
@@ -29,11 +30,6 @@ export function initBugs(count) {
       children: [] // empty to start
     }
   }));
-
-  // inititialise species population tracker
-  // bugs.forEach((bug) => {
-  //   tracker.speciesCounts[bug.tint] = 1;
-  // });
 
   return bugs;
 }

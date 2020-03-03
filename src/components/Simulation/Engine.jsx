@@ -66,9 +66,6 @@ const AlgaeSprite = props => (
   />
 );
 
-// for algae positioning on birth
-const positions = [[-10, -10], [-10, 0], [10, 10], [0, -10], [0, 10], [10, -10], [10, 0], [10, 10]];
-
 /**
 * -----------------------------------------------
 * Message to display when all dead
@@ -132,8 +129,11 @@ const Engine = withPixiApp(class extends React.Component {
 
     // BUG PROCESSING
     this.props.bugs.forEach((item) => {
+
       // BREED
-      if (item.energy >= item.breedThreshold && this.props.bugs.length < this.props.parameters.maxBugs) {
+      if (this.props.bugs.length < this.props.parameters.maxBugs 
+          && item.width >= item.breedSize 
+          && item.energy >= item.breedThreshold) {
         tracker.totalBugs++;
         var offspring = Object.assign({}, this.evolve(item)); // empty object to receive contents of item
         item.energy = Math.round(item.energy * 0.75) - this.props.parameters.breedingCost; // lose 25%, plus breeding cost, for breeding
@@ -153,20 +153,32 @@ const Engine = withPixiApp(class extends React.Component {
         offspring.width = 5;
         offspring.height = 10;
         this.props.bugs.push(offspring); // add adjusted copy
-        // this.props.addBug(offspring); // very slow
+        // this.props.addBug(offspring); // very slow but correct
         tracker.speciesCounts[offspring.tint] ? tracker.speciesCounts[offspring.tint]++ : tracker.speciesCounts[offspring.tint] = 1; // track new births
       }
 
-      // EAT OTHER BUGS
+      // EAT OTHER BUGS - smaller bugs always eaten, supports growth
       this.props.bugs.forEach((other) => {
-        // don't test against self, based on position of old value
+        // don't test against self, based on position of other value
         if (item.tint !== other.tint && item.x !== other.x && item.y !== other.y) {
-          if (contact(item, other)) {
-            item.direction += (Math.random() - 0.5) * 0.75; // avoidance
-            // consume the contacted bug
-            if (other.energy > 0) {
-              item.energy += Math.min(500, other.energy); // take what there is
-              other.energy = Math.max(0, other.energy - 500); // reduce to 0, or by 500
+          // if touching and smaller, eat the smaller one, if not own offspring, otherwise no change
+          if (contact(item, other) && item.geneology.id !== other.geneology.parent) {
+            // eat
+            if(item.width > other.width) {
+              item.energy += other.energy; // take what energy there is
+              other.energy = 0;
+              other.tint = 0xFF; // flash white before removal
+            }
+            // be eaten
+            else if(item.width < other.width) {
+              other.energy += item.energy; // take what energy there is
+              item.energy = 0;
+              item.tint = 0xFF; // flash white before removal
+            }
+            // avoid
+            else {
+              item.direction += (Math.random() - 0.5) * 0.75; // avoidance
+              other.direction += (Math.random() - 0.5) * 0.75; // avoidance
             }
           }
         }
@@ -219,16 +231,19 @@ const Engine = withPixiApp(class extends React.Component {
       offspring.tint = item.tint + Math.round(Math.random() * 0xFFFF) - 0x8888; // new colour to indicate change
 
       // make one small change
-      var change = Math.round(Math.random() * 2);
+      var change = Math.round(Math.random() * 3);
       switch (change) {
         case 0:
-          offspring.turningSpeed = item.turningSpeed + (Math.random() * 0.2 - 0.1);
+          offspring.turningSpeed += (Math.random() * 0.2 - 0.1);
           break;
         case 1:
-          offspring.speed = item.speed + Math.floor(Math.random() * 4) - 2; // allow slow down too
+          offspring.speed += Math.floor(Math.random() * 4) - 2; // allow slow down too
           break;
         case 2:
-          offspring.breedThreshold += item.breedThreshold + Math.floor(Math.random() * 20) - 10; // variable breed speed, up or down
+          offspring.breedThreshold += Math.floor(Math.random() * 20) - 10; // variable breed speed, up or down
+          break;
+        case 3:
+          offspring.breedSize += Math.min(22, Math.max(5, Math.floor(Math.random() * 2) - 1));
           break;
         default:
           console.log("no change ...", change);
@@ -240,19 +255,13 @@ const Engine = withPixiApp(class extends React.Component {
   
   // direct manipulation - no array replacement
   algaeLogic = () => {
-    // first, check once over all items, remove any with 0 energy
-    this.props.algae.forEach((a, i) => {
-      if (a.energy === 0) {
-        this.props.algae.splice(i, 1); // dead algae is at position i
-        // this.props.deleteAlgae(a); // slow but correct
-      }
-    });
-
-
     // ALGAE PROCESSING
     this.props.algae.forEach((item) => {
-      // GROW - stagger across algae
-      if(item.width < 25 && tracker.ticks % 25 === 0 && Math.floor(Math.random() * 4) === 0) {
+      // increment age
+      item.cycles++
+
+      // GROW - based on algae age
+      if(item.width < 25 && item.cycles % 75 === 0) {
         item.width++;
         item.height++;
       }
@@ -265,10 +274,10 @@ const Engine = withPixiApp(class extends React.Component {
         offspring.width = 5;
         offspring.height = 5;
 
-        var index = Math.floor(Math.random() * positions.length);
-        // randomness creates drift from pure grid, lines reminisent of algae
-        offspring.x += positions[index][0] + Math.floor(Math.random() * 8) - 4;
-        offspring.y += positions[index][1] + Math.floor(Math.random() * 8) - 4;
+        var angle = Math.random() * Math.PI * 2;
+        var radius = Math.random() * 10 + 10;
+        offspring.x += Math.round(Math.cos(angle)*radius);
+        offspring.y += Math.round(Math.sin(angle)*radius);   
 
         // edge wrap detection - move to function
         if (offspring.x < this.bounds.x) {
@@ -296,8 +305,8 @@ const Engine = withPixiApp(class extends React.Component {
         // no overlap so create
         if (!isContact) {
           // only take energy away when space to breed
-          item.energy = Math.round(item.energy / 2); // half - energy updated without redux update
-          offspring.energy = Math.round(item.energy / 2); // half
+          item.energy = Math.round(item.energy * 0.9); // keep 90%
+          offspring.energy = Math.round(item.energy * 0.1); // 10%
           this.props.algae.push(offspring); // add adjusted copy
           // this.props.addAlgae(offspring); // slow but correct
         }
@@ -305,7 +314,8 @@ const Engine = withPixiApp(class extends React.Component {
 
       // PHOTOSYNTHESISE
       // put a cap on energy stored based on breeding threshold - must have that much
-      item.energy = Math.min(this.props.parameters.algaeBreedThreshold, item.energy + 1);
+      // item.energy = Math.min(this.props.parameters.algaeBreedThreshold, item.energy + 1);
+      item.energy = Math.min(item.width * 8, item.energy + 1); // limit energy based on size - need to grow
     })
   }
 
@@ -320,9 +330,9 @@ const Engine = withPixiApp(class extends React.Component {
     // re-rendering causes algae to work too
     this.props.setBugs(this.props.bugs.map((bug, i) => {
       bug.cycles++;
-      // grow until width 15
+      // GROW until width 15
       // TODO - parameterise init and max sizes
-      if(bug.width < 22 && tracker.ticks % 100 === 0) {
+      if(bug.width < 22 && bug.cycles % 100 === 0) {
         bug.width++;
         bug.height+=2;
       }

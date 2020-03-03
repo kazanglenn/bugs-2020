@@ -66,6 +66,26 @@ const largeMarks = [
     value: 1000,
     label: '1000',
   },
+  {
+    value: 1100,
+    label: '1100',
+  },
+  {
+    value: 1200,
+    label: '1200',
+  },
+  {
+    value: 1300,
+    label: '1300',
+  },
+  {
+    value: 1400,
+    label: '1400',
+  },
+  {
+    value: 1500,
+    label: '1500',
+  },
 ];
 
 const mediumMarks = [
@@ -220,7 +240,7 @@ function Parameters(props) {
         onChange={handleBreedingCostChange}
         aria-labelledby="bug-breed-cost-slider"
         step={10}
-        marks={largeMarks}
+        marks={mediumMarks}
         min={0}
         max={500}
       />
@@ -236,7 +256,7 @@ function Parameters(props) {
         step={50}
         marks={largeMarks}
         min={400}
-        max={1000}
+        max={1500}
       />
 
       <div className={classes.margin} />
