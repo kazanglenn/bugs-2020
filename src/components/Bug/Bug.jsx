@@ -1,20 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-// import Card from '@material-ui/core/Card';
 import Modal from '@material-ui/core/Modal';
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    height: 300,
-    flexGrow: 1,
-    minWidth: 300,
-    transform: 'translateZ(0)',
-    // The position fixed scoping doesn't work in IE 11.
-    // Disable this demo to preserve the others.
-    '@media all and (-ms-high-contrast: none)': {
-      display: 'none',
-    },
-  },
   modal: {
     display: 'flex',
     padding: theme.spacing(1),
@@ -30,24 +18,27 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Bug(bug) {
+export default function Bug({bug, open, handleClose}) {
 
   const classes = useStyles();
-  const rootRef = React.useRef(null);
+
+  console.log(bug.geneology.id)
 
   return (
     <Modal
       disablePortal
       disableEnforceFocus
       disableAutoFocus
-      open
-      aria-labelledby="Bug"
-      aria-describedby="Bug details"
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="Bug" // a11y
+      aria-describedby="Bug details" // a11y
       className={classes.modal}
-      container={() => rootRef.current}
     >
       <div className={classes.paper}>
-        <p id="server-modal-description">{bug}</p>
+        <p>ID: {bug.geneology.id}</p>
+        <p>X: {bug.x}</p>
+        <p>Y: {bug.y}</p>
       </div>
     </Modal>
   );

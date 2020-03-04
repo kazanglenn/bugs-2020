@@ -13,11 +13,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import CardMedia from '@material-ui/core/CardMedia';
+import CardActions from '@material-ui/core/CardActions';
 
 // project components
-import Bug from '../Bug';
+import { Bug } from '../Bug';
 import BugImage from '../../assets/flatworm.png';
-
 
 
 const useStyles = makeStyles({
@@ -37,6 +37,57 @@ const useStyles = makeStyles({
 function BugList({ bugs }) {
 
   const classes = useStyles();
+
+  // initial modal values
+  const init = () => {
+    var b = [];
+    console.log(bugs)
+    bugs.forEach((bug) => {
+      console.log(bug)
+      b.push(
+        {
+          id: bug.geneology.id,
+          open: false
+        }
+      );
+    });
+    return b;
+  }
+
+  const [open, setOpen] = React.useState(init());
+  // setOpen(init());
+
+  const handleOpen = (bug) => {
+    console.log("open", bug.geneology.id);
+    open.forEach((b, i) => {
+      if (b.id === bug.geneology.id) {
+        open.splice(i, 1);
+      }
+    });
+    setOpen([
+      ...open,
+      {
+        id: bug.geneology.id,
+        open: true
+      }
+    ]);
+  };
+
+  const handleClose = (bug) => {
+    console.log("close", bug.geneology.id);
+    open.forEach((b, i) => {
+      if (b.id === bug.geneology.id) {
+        open.splice(i, 1);
+      }
+    });
+    setOpen([
+      ...open,
+      {
+        id: bug.geneology.id,
+        open: false
+      }
+    ]);
+  };
 
   // TODO - add paging, pop up bug details ...
   return (
@@ -61,7 +112,10 @@ function BugList({ bugs }) {
             {bugs.map((bug, i) => (
               <TableRow key={i}>
                 <TableCell align="left">
-                 <CardMedia className={classes.media} image={BugImage} title={"ID: "+bug.geneology.id} />                  
+                  <CardActions>
+                    <CardMedia className={classes.media} image={BugImage} title={"View bug " + bug.geneology.id} onClick={() => handleOpen(bug)} />
+                  </CardActions>
+                  <Bug bug={bug} open={open[i].open} handleClose={() => handleClose(bug)}/>
                 </TableCell>
                 <TableCell align="right">{bug.tint}</TableCell>
                 <TableCell align="right">{bug.cycles}</TableCell>
