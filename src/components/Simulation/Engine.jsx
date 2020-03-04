@@ -132,13 +132,13 @@ const Engine = withPixiApp(class extends React.Component {
 
       // BREED
       if (this.props.bugs.length < this.props.parameters.maxBugs 
-          && item.width >= item.breedSize 
-          && item.energy >= item.breedThreshold) {
+          && item.width >= item.breedSize // big enough
+          && item.energy >= item.breedThreshold) { // with enough energy
         tracker.totalBugs++;
         var offspring = Object.assign({}, this.evolve(item)); // empty object to receive contents of item
         // TODO - parameterise ow much energy offspring gets
-        offspring.energy = Math.round(item.energy * 0.25); // offspring gets 25% of energy - do this first
-        item.energy = Math.round(item.energy * 0.75) - this.props.parameters.breedingCost; // lose 25%, plus breeding cost, for breeding
+        offspring.energy = Math.floor(item.energy * 0.25); // offspring gets 25% of energy - do this first
+        item.energy = Math.floor(item.energy * 0.75) - this.props.parameters.breedingCost; // lose 25%, plus breeding cost, for breeding
         offspring.direction = Math.random() * Math.PI * 2; // new heading
         // geneology tracking
         var uuid = uuidv4();
@@ -148,7 +148,7 @@ const Engine = withPixiApp(class extends React.Component {
           parent: item.geneology.id,
           children: [] // create blank array for child
         }
-        offspring.cycles = 0; // age = 0
+        offspring.cycles = 0; // age tracking
         // start small, grow in size
         offspring.width = 5;
         offspring.height = 10;
@@ -161,7 +161,7 @@ const Engine = withPixiApp(class extends React.Component {
       this.props.bugs.forEach((other) => {
         // don't test against self, based on position of other value
         // if (item.tint !== other.tint && other.geneology.parent !== item.geneology.id && item.x !== other.x && item.y !== other.y) {
-        if (other.geneology.id !== item.geneology.id 
+        if (other.geneology.id !== item.geneology.id // don't compare to self!
           && item.tint !== other.tint 
           && (item.geneology.id !== other.geneology.parent && item.geneology.parent !== other.geneology.id)) {
           // if not offspring and touching and smaller, eat the smaller one, or be eaten
@@ -278,7 +278,7 @@ const Engine = withPixiApp(class extends React.Component {
         offspring.height = 5;
 
         var angle = Math.random() * Math.PI * 2;
-        var radius = Math.random() * 25 + 5;
+        var radius = Math.random() * 40 + 5;
         offspring.x += Math.round(Math.cos(angle)*radius);
         offspring.y += Math.round(Math.sin(angle)*radius);
         offspring.rotation = Math.random() * Math.PI * 2;

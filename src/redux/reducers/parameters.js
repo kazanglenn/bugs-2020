@@ -4,7 +4,7 @@ import { SET_PARAMETERS, RESET_PARAMETERS } from "../actionTypes";
 const initParameters = {
   maxBugs: 250,
   breedingCost: 100,
-  maxAlgae: 1500,
+  maxAlgae: 1000,
   algaeBreedThreshold: 100,
   sampleInterval: 100, // number of ticks before counting species and other metrics taken
   mutationRate: 10, // 1 in n chance of mutation taking place, lower the number, higher the rate

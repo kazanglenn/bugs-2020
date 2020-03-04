@@ -12,9 +12,12 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import CardMedia from '@material-ui/core/CardMedia';
 
 // project components
 import Bug from '../Bug';
+import BugImage from '../../assets/flatworm.png';
+
 
 
 const useStyles = makeStyles({
@@ -24,6 +27,10 @@ const useStyles = makeStyles({
     margin: 5,
     display: 'flex',
     flexDirection: 'row'
+  },
+  media: {
+    height: 40,
+    width: 20,
   }
 });
 
@@ -38,27 +45,31 @@ function BugList({ bugs }) {
         <Table className={classes.table} size="small" aria-label="bug-list">
           <TableHead>
             <TableRow>
-              <TableCell align="left">ID</TableCell>
+              <TableCell align="left">Bug</TableCell>
               <TableCell align="right">Species</TableCell>
               <TableCell align="right">Age</TableCell>
               <TableCell align="right">Energy</TableCell>
               <TableCell align="right">Offspring</TableCell>
               <TableCell align="right">Speed</TableCell>
               <TableCell align="right">Turning Speed</TableCell>
-              <TableCell align="right">Breed Size</TableCell>
+              <TableCell align="right">Width</TableCell>
+              <TableCell align="right">Breed Width</TableCell>
               <TableCell align="right">Breed Energy</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {bugs.map((bug, i) => (
               <TableRow key={i}>
-                <TableCell align="left">{bug.geneology.id}</TableCell>
+                <TableCell align="left">
+                 <CardMedia className={classes.media} image={BugImage} title={"ID: "+bug.geneology.id} />                  
+                </TableCell>
                 <TableCell align="right">{bug.tint}</TableCell>
                 <TableCell align="right">{bug.cycles}</TableCell>
                 <TableCell align="right">{bug.energy}</TableCell>
                 <TableCell align="right">{bug.geneology.children.length}</TableCell>
                 <TableCell align="right">{bug.speed}</TableCell>
                 <TableCell align="right">{(bug.turningSpeed).toFixed(6)}</TableCell>
+                <TableCell align="right">{bug.width}</TableCell>
                 <TableCell align="right">{bug.breedSize}</TableCell>
                 <TableCell align="right">{bug.breedThreshold}</TableCell>
               </TableRow>
