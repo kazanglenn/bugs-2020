@@ -1,6 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
+import CardMedia from '@material-ui/core/CardMedia';
+import BugImage from '../../assets/flatworm.png';
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -16,6 +18,10 @@ const useStyles = makeStyles(theme => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
+  media: {
+    height: 40,
+    width: 20,
+  }
 }));
 
 export default function Bug(props) {
@@ -34,9 +40,15 @@ export default function Bug(props) {
       className={classes.modal}
     >{props.bug !== null ?
       <div className={classes.paper}>
+        <CardMedia className={classes.media} image={BugImage} />
         <p>ID: {props.bug.geneology.id}</p>
-        <p>X: {props.bug.x}</p>
-        <p>Y: {props.bug.y}</p>
+        <p>Energy: {props.bug.energy}</p>
+        <p>Cycles: {props.bug.cycles}</p>
+        <p>Speed: {props.bug.speed}</p>
+        <p>Turning Speed: {props.bug.turningSpeed}</p>
+        <p>Breed Size: {props.bug.breedSize}</p>
+        <p>Breed Threshold: {props.bug.breedThreshold}</p>
+        <p>Offspring: {props.bug.geneology.children.length}</p>
       </div>
       : <div><p>bug not specified</p></div>
     }
