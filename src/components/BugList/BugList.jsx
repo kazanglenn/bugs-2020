@@ -38,55 +38,16 @@ function BugList({ bugs }) {
 
   const classes = useStyles();
 
-  // initial modal values
-  const init = () => {
-    var b = [];
-    console.log(bugs)
-    bugs.forEach((bug) => {
-      console.log(bug)
-      b.push(
-        {
-          id: bug.geneology.id,
-          open: false
-        }
-      );
-    });
-    return b;
-  }
+  const [bug, setBug] = React.useState(null);
+  const [open, setOpen] = React.useState(false);
 
-  const [open, setOpen] = React.useState(init());
-  // setOpen(init());
-
-  const handleOpen = (bug) => {
-    console.log("open", bug.geneology.id);
-    open.forEach((b, i) => {
-      if (b.id === bug.geneology.id) {
-        open.splice(i, 1);
-      }
-    });
-    setOpen([
-      ...open,
-      {
-        id: bug.geneology.id,
-        open: true
-      }
-    ]);
+  const handleOpen = (b) => {
+    setBug(b);
+    setOpen(true);
   };
 
-  const handleClose = (bug) => {
-    console.log("close", bug.geneology.id);
-    open.forEach((b, i) => {
-      if (b.id === bug.geneology.id) {
-        open.splice(i, 1);
-      }
-    });
-    setOpen([
-      ...open,
-      {
-        id: bug.geneology.id,
-        open: false
-      }
-    ]);
+  const handleClose = () => {
+    setOpen(false);
   };
 
   // TODO - add paging, pop up bug details ...
@@ -109,28 +70,28 @@ function BugList({ bugs }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {bugs.map((bug, i) => (
+            {bugs.map((b, i) => (
               <TableRow key={i}>
                 <TableCell align="left">
                   <CardActions>
-                    <CardMedia className={classes.media} image={BugImage} title={"View bug " + bug.geneology.id} onClick={() => handleOpen(bug)} />
+                    <CardMedia className={classes.media} image={BugImage} title={"View bug " + b.geneology.id} onClick={() => {handleOpen(b)}} />
                   </CardActions>
-                  <Bug bug={bug} open={open[i].open} handleClose={() => handleClose(bug)}/>
                 </TableCell>
-                <TableCell align="right">{bug.tint}</TableCell>
-                <TableCell align="right">{bug.cycles}</TableCell>
-                <TableCell align="right">{bug.energy}</TableCell>
-                <TableCell align="right">{bug.geneology.children.length}</TableCell>
-                <TableCell align="right">{bug.speed}</TableCell>
-                <TableCell align="right">{(bug.turningSpeed).toFixed(6)}</TableCell>
-                <TableCell align="right">{bug.width}</TableCell>
-                <TableCell align="right">{bug.breedSize}</TableCell>
-                <TableCell align="right">{bug.breedThreshold}</TableCell>
+                <TableCell align="right">{b.tint}</TableCell>
+                <TableCell align="right">{b.cycles}</TableCell>
+                <TableCell align="right">{b.energy}</TableCell>
+                <TableCell align="right">{b.geneology.children.length}</TableCell>
+                <TableCell align="right">{b.speed}</TableCell>
+                <TableCell align="right">{(b.turningSpeed).toFixed(6)}</TableCell>
+                <TableCell align="right">{b.width}</TableCell>
+                <TableCell align="right">{b.breedSize}</TableCell>
+                <TableCell align="right">{b.breedThreshold}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Bug open={open} bug={bug} handleClose={handleClose}/>
     </Card>
   );
 

@@ -18,28 +18,28 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Bug({bug, open, handleClose}) {
+export default function Bug(props) {
 
   const classes = useStyles();
-
-  console.log(bug.geneology.id)
 
   return (
     <Modal
       disablePortal
       disableEnforceFocus
       disableAutoFocus
-      open={open}
-      onClose={handleClose}
+      open={props.open}
+      onClose={props.handleClose}
       aria-labelledby="Bug" // a11y
       aria-describedby="Bug details" // a11y
       className={classes.modal}
-    >
+    >{props.bug !== null ?
       <div className={classes.paper}>
-        <p>ID: {bug.geneology.id}</p>
-        <p>X: {bug.x}</p>
-        <p>Y: {bug.y}</p>
+        <p>ID: {props.bug.geneology.id}</p>
+        <p>X: {props.bug.x}</p>
+        <p>Y: {props.bug.y}</p>
       </div>
+      : <div><p>bug not specified</p></div>
+    }
     </Modal>
   );
 

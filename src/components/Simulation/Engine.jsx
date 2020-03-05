@@ -16,6 +16,7 @@ import { contact, wrap } from './physics';
 import { initBugs } from './bugs';
 import { initAlgae } from './algae';
 
+
 /**
 * -----------------------------------------------
 * tracker, for stats, local copy to make redux management easier
@@ -36,18 +37,16 @@ var tracker = {
 * Bug Component
 * -----------------------------------------------
 */
-const BugSprite = props => (
-  <Sprite {...props}
+const BugSprite = (props) => (
+  <Sprite {...props.bug}
     image={BugImage}
     anchor={0.5}
     overwriteProps={true}
     ignoreEvents={true}
     interactive={true}
     pointerdown={() => { // respond to click
-      // TODO - create a popup or something on screen - this is to browser console
-      console.log(props);
-      // <Bug props/>
-      // render()
+      console.log(props.bug, props.handleOpen);
+      props.handleOpen(props.bug); // open bug modal popup
     }}
   />
 );
@@ -84,7 +83,6 @@ const notice = <Text
   })}
 />
 
-
 /**
 * -----------------------------------------------
 * Core simulation engine
@@ -108,11 +106,9 @@ const Engine = withPixiApp(class extends React.Component {
     console.log("engine props => ", this.props)
   }
 
-
   componentWillUnmount() {
     this.props.app.ticker.remove(this.tick);
   }
-
 
   // direct manipulation version
   bugLogic = () => {
@@ -121,7 +117,6 @@ const Engine = withPixiApp(class extends React.Component {
       if (b.energy === 0) {
         this.props.bugs.splice(i, 1); // other is at position i
         // this.props.deleteBug(b); // slow but correct
-        // tracker.speciesCounts[b.tint]--;
         tracker.speciesCounts[b.tint] ? tracker.speciesCounts[b.tint]-- : tracker.speciesCounts[b.tint] = 0; // may not exist if first org
       }
     });
@@ -160,7 +155,6 @@ const Engine = withPixiApp(class extends React.Component {
       // EAT OTHER BUGS - smaller bugs always eaten, supports growth
       this.props.bugs.forEach((other) => {
         // don't test against self, based on position of other value
-        // if (item.tint !== other.tint && other.geneology.parent !== item.geneology.id && item.x !== other.x && item.y !== other.y) {
         if (other.geneology.id !== item.geneology.id // don't compare to self!
           && item.tint !== other.tint 
           && (item.geneology.id !== other.geneology.parent && item.geneology.parent !== other.geneology.id)) {
@@ -223,8 +217,6 @@ const Engine = withPixiApp(class extends React.Component {
     })
   }
 
-
-
   // check if should evolve, make small adjustment if so
   evolve = (item) => {
     var offspring = Object.assign({}, item);
@@ -254,7 +246,6 @@ const Engine = withPixiApp(class extends React.Component {
     }
     return offspring;
   }
-
   
   // direct manipulation - no array replacement
   algaeLogic = () => {
@@ -323,15 +314,13 @@ const Engine = withPixiApp(class extends React.Component {
     })
   }
 
-
-
   tick = () => {
     this.bugLogic();
     this.algaeLogic();
 
     // doing this here to update state to cause re-rendering
-    // see if way to force re-render witht replacing bug array
-    // re-rendering causes algae to work too
+    // see if way to force re-render without replacing bug array
+    // re-rendering causes algae to work too without direct manipulation - hack
     this.props.setBugs(this.props.bugs.map((bug, i) => {
       bug.cycles++;
       // GROW until width 15
@@ -350,7 +339,7 @@ const Engine = withPixiApp(class extends React.Component {
 
     tracker.ticks++;
 
-    // every nth tick, record bug volumes by species - not too oftem, will slow processing
+    // every nth tick, record bug volumes by species - not too often, slows processing
     if (tracker.ticks % this.props.parameters.sampleInterval === 0) {
 
       // add population measures to redux store
@@ -388,10 +377,9 @@ const Engine = withPixiApp(class extends React.Component {
 
   }
 
-
   render = () => {
     var algae = this.props.algae.map(props => <AlgaeSprite {...props} />);
-    var bugs = this.props.bugs.map(props => <BugSprite {...props} />);
+    var bugs = this.props.bugs.map(bug => <BugSprite bug={bug} handleOpen={this.props.handleOpen}/>);
 
     var message =
       "Cycle: ".concat(tracker.ticks)
@@ -445,7 +433,7 @@ const Engine = withPixiApp(class extends React.Component {
         this.props.setControl('PLAY'); // set running again
         break;
       default:
-        console.log("command not recognised ...");
+        console.log("control not recognised ...");
     }
 
     if (this.props.bugs.length > 0) {

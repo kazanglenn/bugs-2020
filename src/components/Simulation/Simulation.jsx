@@ -3,9 +3,9 @@ import { Provider } from "react-redux";
 import store from "../../redux/store";
 import { Stage, Container } from '@inlet/react-pixi';
 
+// material-ui components
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
-
 
 // images
 import BackgroundImage from '../../assets/background_water.png';
@@ -14,6 +14,8 @@ import BackgroundImage from '../../assets/background_water.png';
 import ReactViewport from '../ReactViewport';
 import Engine from './Engine';
 
+// project components
+import { Bug } from '../Bug';
 
 /**
 * -----------------------------------------------
@@ -56,7 +58,6 @@ const config = {
 */
 class Settings extends React.PureComponent {
 
-  // state = { ...config.properties, bugs: config.bugs, algae: config.algae, changed: false }
   state = { ...config.properties, changed: false }
 
   componentDidMount() {
@@ -86,9 +87,18 @@ function Simulation(props) {
 
   const classes = useStyles(props);
 
-  console.log("sim props => ", props)
+  const [bug, setBug] = React.useState(null);
+  const [open, setOpen] = React.useState(false);
 
-  // note passing functions to Batch component - there must be a better way, getting too many
+  const handleOpen = (b) => {
+    setBug(b);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <Card className={classes.card}>
       <Stage width={props.width} height={props.height} options={{ transparent: true }}>
@@ -97,13 +107,14 @@ function Simulation(props) {
           <Settings>
             {config => (
               <Container properties={config}>
-                <Engine config={props}/>
+                <Engine config={props} handleOpen={handleOpen} />
               </Container>
             )}
           </Settings>
           </Provider>
         {/* </ReactViewport> */}
       </Stage>
+      <Bug open={open} bug={bug} handleClose={handleClose}/>
     </Card>
   );
 }
