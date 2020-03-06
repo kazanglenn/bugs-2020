@@ -11,9 +11,16 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Avatar from '@material-ui/core/Avatar';
 
 
 const useStyles = makeStyles(theme => ({
+  header: {
+    display: 'flex',
+    padding: theme.spacing(1),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   modal: {
     display: 'flex',
     padding: theme.spacing(1),
@@ -28,10 +35,6 @@ const useStyles = makeStyles(theme => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
-  media: {
-    height: 40,
-    width: 20,
-  }
 }));
 
 export default function Bug(props) {
@@ -54,9 +57,15 @@ export default function Bug(props) {
       className={classes.modal}
     >{props.bug !== null ?
       <div className={classes.paper}>
+        <div className={classes.header}>
+        <Avatar alt={"iamge of bug " + props.bug.geneology.id}>
+          <ReactImageTint src={BugImage} color={colourString} />
+        </Avatar>
+        &nbsp;
         <Typography variant="body1" color="primary" component="p" align="center">
-          <ReactImageTint src={BugImage} color={colourString} />&nbsp;&nbsp;{props.bug.geneology.id}
+          {props.bug.geneology.id}
         </Typography>
+        </div>
         <TableContainer component={Paper}>
           <Table className={classes.table} size="small" aria-label="bug-list">
             <TableBody>
@@ -91,7 +100,6 @@ export default function Bug(props) {
             </TableBody>
           </Table>
         </TableContainer>
-
 
       </div>
       : <div><p>bug not specified</p></div>
