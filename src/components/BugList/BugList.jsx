@@ -14,6 +14,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
+import * as PIXI from "pixi.js";
+import { ReactImageTint } from 'react-image-tint';
 
 // project components
 import { Bug } from '../Bug';
@@ -70,11 +72,17 @@ function BugList({ bugs }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {bugs.map((b, i) => (
+            {bugs.map((b, i) => {
+              let colour = PIXI.utils.premultiplyTintToRgba(b.tint, 0.5);
+              let hexcolour = [colour[0] * 0x255, colour[1] * 0x255, colour[2] * 0x255];
+              let colourString = 'rgba(' + hexcolour[0] + ',' + hexcolour[1] + ',' + hexcolour[2] + ', 0.8)';
+              return (
               <TableRow key={i}>
                 <TableCell align="left">
                   <CardActions>
-                    <CardMedia className={classes.media} image={BugImage} title={"View bug " + b.geneology.id} onClick={() => {handleOpen(b)}} />
+                    <CardMedia className={classes.media} title={"View bug " + b.geneology.id} onClick={() => {handleOpen(b)}} >
+                    <ReactImageTint src={BugImage} color={colourString} />
+                    </CardMedia>
                   </CardActions>
                 </TableCell>
                 <TableCell align="right">{b.tint}</TableCell>
@@ -82,12 +90,12 @@ function BugList({ bugs }) {
                 <TableCell align="right">{b.energy}</TableCell>
                 <TableCell align="right">{b.geneology.children.length}</TableCell>
                 <TableCell align="right">{b.speed}</TableCell>
-                <TableCell align="right">{(b.turningSpeed).toFixed(6)}</TableCell>
+                <TableCell align="right">{b.turningSpeed.toFixed(6)}</TableCell>
                 <TableCell align="right">{b.width}</TableCell>
                 <TableCell align="right">{b.breedSize}</TableCell>
                 <TableCell align="right">{b.breedThreshold}</TableCell>
               </TableRow>
-            ))}
+            )})}
           </TableBody>
         </Table>
       </TableContainer>
