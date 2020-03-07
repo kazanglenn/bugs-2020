@@ -193,11 +193,17 @@ const Engine = withPixiApp(class extends React.Component {
         }
       });
 
+      // BRAIN TEST
+      var movement = item.brain.move(item.speed, item.direction, item.x, item.y, item.energy);
+      item.direction = movement.direction;
+      item.speed = movement.speed;
+
       // MOVE 
       item.x = item.x + Math.sin(item.direction) * (item.speed * item._s);
       item.y = item.y + Math.cos(item.direction) * (item.speed * item._s);
       item.rotation = -item.direction + Math.PI;
-      item.direction = item.direction + item.turningSpeed * (Math.random() - 0.5) * 0.5;
+      // item.direction = item.direction + item.turningSpeed * (Math.random() - 0.5) * 0.5;
+
       // wrap testing
       if (item.x < this.bounds.x) {
         item.x += this.bounds.width;

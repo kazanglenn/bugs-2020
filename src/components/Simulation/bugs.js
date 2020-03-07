@@ -1,4 +1,5 @@
 import uuidv4 from 'uuid/v4';
+import brain from './brain';
 
 /**
 * -----------------------------------------------
@@ -7,10 +8,11 @@ import uuidv4 from 'uuid/v4';
 */
 export function initBugs(count) {
   var bugs = [...Array(count)].map(() => ({
+    brain: new brain(),
     speed: Math.ceil((2 + Math.random() * 4) * 0.5),
     turningSpeed: Math.random() - 0.8,
     direction: Math.random() * Math.PI * 2,
-    tint: Math.round(Math.random() * 0xFFFFFF),
+    tint: Math.round(Math.random() * 0xFFFFFF), // species and colour
     // TODO - take width/height from props
     x: Math.random() * 1000,
     y: Math.random() * 500,
