@@ -63,7 +63,7 @@ export default function SimWrapper() {
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
+        <Tabs value={value} onChange={handleChange} aria-label="simple tabs example" variant="scrollable">
           <Tab label="Simulation" {...a11yProps(0)} />
           <Tab label="Summary Chart" {...a11yProps(1)} />
           <Tab label="Species Chart" {...a11yProps(2)} />
