@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "53edc401e50b25a6e7a8b28273e76c6e",
+    "revision": "3530fc2d0578badcdfe0d9e433bb8964",
     "url": "/bugs-2020/index.html"
   },
   {
-    "revision": "1d768494e726bb3b3fd4",
+    "revision": "146974eeec3cbebc8e0c",
     "url": "/bugs-2020/static/css/main.ec2ae3ec.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/bugs-2020/static/js/2.a08c9972.chunk.js.LICENSE"
   },
   {
-    "revision": "1d768494e726bb3b3fd4",
-    "url": "/bugs-2020/static/js/main.3358fe2f.chunk.js"
+    "revision": "146974eeec3cbebc8e0c",
+    "url": "/bugs-2020/static/js/main.6d95df8a.chunk.js"
   },
   {
     "revision": "67c0585897814c39a0e1",
@@ -28,7 +28,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/bugs-2020/static/media/bugs2020.bfb2339d.png"
   },
   {
-    "revision": "2ccfa65eb134d84c3f11db7c339a6c01",
-    "url": "/bugs-2020/static/media/sand_tile.2ccfa65e.png"
+    "revision": "578930a45aac8fc2dceb50e41b05d2a5",
+    "url": "/bugs-2020/static/media/dark_sand_tile.578930a4.png"
   }
 ]);
