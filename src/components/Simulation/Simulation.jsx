@@ -8,7 +8,7 @@ import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 
 // images
-import BackgroundImage from '../../assets/background_water.png';
+import BackgroundImage from '../../assets/sand_tile.png';
 
 // simulation components
 import ReactViewport from '../ReactViewport';
@@ -27,6 +27,7 @@ const useStyles = makeStyles({
     maxWidth: props.width,
     maxHeight: props.height,
     backgroundImage: 'url(' + BackgroundImage + ')',
+    backgroundRepeat: 'repeat-x',
     margin: 5,
     display: 'flex',
     flexDirection: 'row'

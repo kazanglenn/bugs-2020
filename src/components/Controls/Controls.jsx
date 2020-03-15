@@ -12,7 +12,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 1000,
+    maxWidth: "100%",
     maxHeight: 100,
     margin: 5,
     display: 'flex',
@@ -23,16 +23,21 @@ const useStyles = makeStyles({
   }
 });
 
+var CONTROL = {
+  PAUSE: 'PAUSE',
+  PLAY: 'PLAY',
+  RESET: 'RESET'
+};
+
 function Controls(props) {
 
   const classes = useStyles();
 
-  // TODO - statics not strings
   return (
     <Card className={classes.card}>
-      <Button className={classes.button} variant="contained" onClick={() => { props.setControl('PAUSE'); }}><PauseIcon /></Button>
-      <Button className={classes.button} variant="contained" onClick={() => { props.setControl('PLAY'); }}><PlayArrowIcon /></Button>
-      <Button className={classes.button} variant="contained" onClick={() => { props.setControl('RESET'); }}><RefreshIcon /></Button>
+      <Button className={classes.button} variant="contained" onClick={() => { props.setControl(CONTROL.PAUSE); }}><PauseIcon /></Button>
+      <Button className={classes.button} variant="contained" onClick={() => { props.setControl(CONTROL.PLAY); }}><PlayArrowIcon /></Button>
+      <Button className={classes.button} variant="contained" onClick={() => { props.setControl(CONTROL.RESET); }}><RefreshIcon /></Button>
     </Card>
   );
 }

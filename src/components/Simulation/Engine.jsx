@@ -13,6 +13,7 @@ import AlgaeImage from '../../assets/algae_small.png';
 
 // simulation components
 import { contact, wrap } from './physics';
+import brain from './brain';
 import { initBugs } from './bugs';
 import { initAlgae } from './algae';
 
@@ -84,6 +85,52 @@ const notice = <Text
 />
 
 /**
+ * TODO - add event listener, get this working to allow scaling for mobile devices
+ * @param {PIXI.Application} app
+ * @returns {Function}
+ * see https://github.com/michelfaria/pixijs-scaletofit/blob/master/game.js
+ */
+function resize(app) {
+
+  return function () {
+    // these values controls the size of the simulation plane
+    const WIDTH = 1000;
+    var HEIGHT = 500;
+
+    const vpw = window.innerWidth; // Width of the viewport
+    const vph = window.innerHeight; // Height of the viewport
+    let nvw; // New game width
+    let nvh; // New game height
+
+    // The aspect ratio is the ratio of the screen's sizes in different dimensions.
+    // The height-to-width aspect ratio of the game is HEIGHT / WIDTH.
+
+    if (vph / vpw < HEIGHT / WIDTH) {
+      // If height-to-width ratio of the viewport is less than the height-to-width ratio
+      // of the game, then the height will be equal to the height of the viewport, and
+      // the width will be scaled.
+      nvh = vph;
+      nvw = (nvh * WIDTH) / HEIGHT;
+    } else {
+      // In the else case, the opposite is happening.
+      nvw = vpw;
+      nvh = (nvw * HEIGHT) / WIDTH;
+    }
+
+    // each tab causes a call, once rendered - here check we are dealing with the PIXI tab
+    if(app.renderer) {
+      // Set the game screen size to the new values.
+      // This command only makes the screen bigger --- it does not scale the contents of the game.
+      // There will be a lot of extra room --- or missing room --- if we don't scale the stage.
+      app.renderer.resize(nvw, nvh);
+
+      // This command scales the stage to fit the new size of the game.
+      app.stage.scale.set(nvw / WIDTH, nvh / HEIGHT);
+    }
+  };
+}
+
+/**
 * -----------------------------------------------
 * Core simulation engine
 * -----------------------------------------------
@@ -100,10 +147,16 @@ const Engine = withPixiApp(class extends React.Component {
       Number(this.props.app.screen.height) + padding
     );
 
+    // initial sizing
+    resize(this.props.app, this.props.app.screen.width, this.props.app.screen.height)();
+
+    // scale as window is resized
+    window.addEventListener("resize", resize(this.props.app));
+
     // this adds ticker to app causing execution of graphics loop
     this.props.app.ticker.add(this.tick);
 
-    console.log("engine props => ", this.props)
+    console.log("engine props => ", this.props);
   }
 
   componentWillUnmount() {
@@ -126,12 +179,12 @@ const Engine = withPixiApp(class extends React.Component {
     this.props.bugs.forEach((item) => {
 
       // BREED
-      if (this.props.bugs.length < this.props.parameters.maxBugs 
-          && item.width >= item.breedSize // big enough
-          && item.energy >= item.breedThreshold) { // with enough energy
+      if (this.props.bugs.length < this.props.parameters.maxBugs
+        && item.width >= item.breedSize // big enough
+        && item.energy >= item.breedThreshold) { // with enough energy
         tracker.totalBugs++;
         var offspring = Object.assign({}, this.evolve(item)); // empty object to receive contents of item
-        // TODO - parameterise ow much energy offspring gets
+        // TODO - parameterise how much energy offspring gets, cap energy
         offspring.energy = Math.floor(item.energy * 0.25); // offspring gets 25% of energy - do this first
         item.energy = Math.floor(item.energy * 0.75) - this.props.parameters.breedingCost; // lose 25%, plus breeding cost, for breeding
         offspring.direction = Math.random() * Math.PI * 2; // new heading
@@ -156,18 +209,18 @@ const Engine = withPixiApp(class extends React.Component {
       this.props.bugs.forEach((other) => {
         // don't test against self, based on position of other value
         if (other.geneology.id !== item.geneology.id // don't compare to self!
-          && item.tint !== other.tint 
+          && item.tint !== other.tint
           && (item.geneology.id !== other.geneology.parent && item.geneology.parent !== other.geneology.id)) {
           // if not offspring and touching and smaller, eat the smaller one, or be eaten
           if (contact(item, other)) {
             // eat
-            if(item.width > other.width) {
+            if (item.width > other.width) {
               item.energy += other.energy; // take what energy there is
               other.energy = 0;
               // other.tint = 0xFFFFFF; // flash white before removal
             }
             // be eaten
-            else if(item.width < other.width) {
+            else if (item.width < other.width) {
               other.energy += item.energy; // take what energy there is
               item.energy = 0;
               // item.tint = 0xFFFFFF; // flash white before removal
@@ -202,7 +255,6 @@ const Engine = withPixiApp(class extends React.Component {
       item.x = item.x + Math.sin(item.direction) * (item.speed * item._s);
       item.y = item.y + Math.cos(item.direction) * (item.speed * item._s);
       item.rotation = -item.direction + Math.PI;
-      // item.direction = item.direction + item.turningSpeed * (Math.random() - 0.5) * 0.5;
 
       // wrap testing
       if (item.x < this.bounds.x) {
@@ -216,14 +268,19 @@ const Engine = withPixiApp(class extends React.Component {
       }
       else if (item.y > this.bounds.y + this.bounds.height) {
         item.y -= this.bounds.height;
-      }      
+      }
 
       // ENERGY LOSS
       item.energy = Math.max(0, item.energy - (2 + Math.ceil(item.speed))); // energy loss with movement and speed, will need to eat
     })
   }
 
-  // check if should evolve, make small adjustment if so
+  /**
+  * -----------------------------------------------
+  * Evolve bug
+  * check if should evolve, make small adjustment if so
+  * -----------------------------------------------
+  */
   evolve = (item) => {
     var offspring = Object.assign({}, item);
     if (Math.floor(Math.random() * this.props.parameters.mutationRate) === 0) {  // 1 in n chance of a mutuation
@@ -232,19 +289,17 @@ const Engine = withPixiApp(class extends React.Component {
       offspring.tint = item.tint + Math.round(Math.random() * 0xFFFF) - 0x8888; // new colour to indicate change
 
       // make one small change
-      var change = Math.round(Math.random() * 3);
+      // TODO - change smarts, 'brain' attributes, as option
+      var change = Math.floor(Math.random() * 3);
       switch (change) {
         case 0:
-          offspring.turningSpeed += (Math.random() * 0.2 - 0.1);
-          break;
-        case 1:
-          offspring.speed += Math.floor(Math.random() * 4) - 2; // allow slow down too
-          break;
-        case 2:
           offspring.breedThreshold += Math.floor(Math.random() * 20) - 10; // variable breed speed, up or down
           break;
-        case 3:
+        case 1:
           offspring.breedSize += Math.min(22, Math.max(5, Math.floor(Math.random() * 2) - 1));
+          break;
+        case 2:
+          offspring.brain = new brain(); // constructor changes
           break;
         default:
           console.log("no change ...", change);
@@ -252,7 +307,7 @@ const Engine = withPixiApp(class extends React.Component {
     }
     return offspring;
   }
-  
+
   // direct manipulation - no array replacement
   algaeLogic = () => {
     // ALGAE PROCESSING
@@ -261,7 +316,7 @@ const Engine = withPixiApp(class extends React.Component {
       item.cycles++
 
       // GROW - based on algae age
-      if(item.width < 25 && item.cycles % 75 === 0) {
+      if (item.width < 25 && item.cycles % 75 === 0) {
         item.width++;
         item.height++;
       }
@@ -276,8 +331,8 @@ const Engine = withPixiApp(class extends React.Component {
 
         var angle = Math.random() * Math.PI * 2;
         var radius = Math.random() * 40 + 5;
-        offspring.x += Math.round(Math.cos(angle)*radius);
-        offspring.y += Math.round(Math.sin(angle)*radius);
+        offspring.x += Math.round(Math.cos(angle) * radius);
+        offspring.y += Math.round(Math.sin(angle) * radius);
         offspring.rotation = Math.random() * Math.PI * 2;
 
         // edge wrap detection - move to function
@@ -331,9 +386,9 @@ const Engine = withPixiApp(class extends React.Component {
       bug.cycles++;
       // GROW until width 15
       // TODO - parameterise init and max sizes
-      if(bug.width < 22 && bug.cycles % 100 === 0) {
+      if (bug.width < 22 && bug.cycles % 100 === 0) {
         bug.width++;
-        bug.height+=2;
+        bug.height += 2;
       }
       return bug;
     }));
@@ -341,7 +396,7 @@ const Engine = withPixiApp(class extends React.Component {
     // stop processing, all dead
     if (this.props.bugs.length === 0) {
       this.props.app.ticker.stop();
-    };    
+    };
 
     tracker.ticks++;
 
@@ -385,7 +440,7 @@ const Engine = withPixiApp(class extends React.Component {
 
   render = () => {
     var algae = this.props.algae.map(props => <AlgaeSprite {...props} />);
-    var bugs = this.props.bugs.map(bug => <BugSprite bug={bug} handleOpen={this.props.handleOpen}/>);
+    var bugs = this.props.bugs.map(bug => <BugSprite bug={bug} handleOpen={this.props.handleOpen} />);
 
     var message =
       "Cycle: ".concat(tracker.ticks)
@@ -422,8 +477,8 @@ const Engine = withPixiApp(class extends React.Component {
         // stop processing
         this.props.app.ticker.stop();
         // reset the algae and bugs
-        this.props.setBugs(initBugs(5));
-        this.props.setAlgae(initAlgae(500));
+        this.props.setBugs(initBugs(5, 1000, 500));
+        this.props.setAlgae(initAlgae(600, 1000, 500));
         // reset measures redux array
         this.props.resetMeasure();
         // reset species redux array
@@ -443,7 +498,7 @@ const Engine = withPixiApp(class extends React.Component {
     }
 
     if (this.props.bugs.length > 0) {
-        return [...algae, ...bugs, text];
+      return [...algae, ...bugs, text];
     }
     return [...algae, ...bugs, text, notice];
   }

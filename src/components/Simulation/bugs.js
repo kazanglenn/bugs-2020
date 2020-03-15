@@ -6,16 +6,14 @@ import brain from './brain';
 * Init bugs array
 * -----------------------------------------------
 */
-export function initBugs(count) {
+export function initBugs(count, screenWidth, screenHeight) {
   var bugs = [...Array(count)].map(() => ({
     brain: new brain(),
     speed: Math.ceil((2 + Math.random() * 4) * 0.5),
-    turningSpeed: Math.random() - 0.8,
     direction: Math.random() * Math.PI * 2,
     tint: Math.round(Math.random() * 0xFFFFFF), // species and colour
-    // TODO - take width/height from props
-    x: Math.random() * 1000,
-    y: Math.random() * 500,
+    x: Math.random() * screenWidth,
+    y: Math.random() * screenHeight,
     _s: 0.6, // base speed - could add to parameters
     rotation: 0,
     // w/h used for collision detection, and controls sprite size

@@ -82,10 +82,6 @@ export default function Bug(props) {
                 <TableCell align="right">{props.bug.speed}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell align="right">Turning Speed</TableCell>
-                <TableCell align="right">{props.bug.turningSpeed.toFixed(6)}</TableCell>
-              </TableRow>
-              <TableRow>
                 <TableCell align="right">Breed Size</TableCell>
                 <TableCell align="right">{props.bug.breedSize}</TableCell>
               </TableRow>

@@ -7,15 +7,17 @@ import { Line } from 'react-chartjs-2';
 import * as PIXI from "pixi.js";
 
 const useStyles = makeStyles({
-  card: {
-    maxWidth: 1000,
-    maxHeight: 700,
+  card: props => ({
+    maxWidth: "100%",
+    minHeight: props.height,
+    maxHeight: props.height,
     margin: 5
-  }
+  })
 });
 
 const options = {
   responsive: true,
+  maintainAspectRatio: false,
   // animation: false,
   scales: {
     xAxes: [{
@@ -47,22 +49,22 @@ const options = {
   },
   layout: {
     padding: {
-      left: 10,
-      right: 10,
+      left: 5,
+      right: 5,
       top: 5,
       bottom: 5
     }
   }
 }
 
-function SpeciesChart({ species }) {
+function SpeciesChart(props) {
 
-  const classes = useStyles();
+  const classes = useStyles(props);
 
   // species data needs to be pivoted from by cycle to by species to chart
   // TODO - filter to top n species for efficiency
   var chartData = [];
-  species.forEach(element => {
+  props.species.forEach(element => {
     element.counts.forEach(entry => {
       chartData[entry.species] ? chartData[entry.species].push({ x: element.cycle, y: entry.count }) : chartData[entry.species] = [{ x: element.cycle, y: entry.count }];
     });
@@ -93,8 +95,6 @@ function SpeciesChart({ species }) {
     <Card className={classes.card}>
       <Line
         data={chartdata}
-        width={1000}
-        height={700}
         options={options}
       />
     </Card>

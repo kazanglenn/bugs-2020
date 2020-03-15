@@ -72,15 +72,15 @@ export default function SimWrapper() {
       </AppBar>
       <TabPanel value={value} index={0}>
         <Controls />
-        <Simulation width={1000} height={500}/>
+        <Simulation width={"100%"} height={500}/>
         <SummaryChart height={200}/>
         <Tracker />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <SummaryChart height={700}/>
+        <SummaryChart height={400}/>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <SpeciesChart />
+        <SpeciesChart height={700}/>
       </TabPanel>
       <TabPanel value={value} index={3}>
         <BugList />

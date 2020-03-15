@@ -2,7 +2,8 @@ import { SET_BUGS, ADD_BUG, DELETE_BUG, UPDATE_BUG } from "../actionTypes";
 import { initBugs } from '../../components/Simulation/bugs';
 
 // TODO - make init count a param
-const bugs = (state = initBugs(5), action) => {
+// TODO - pull width and height from props somehow
+const bugs = (state = initBugs(5, 1000, 500), action) => {
   switch (action.type) {
     case SET_BUGS:
       return action.payload.bugs; // which will be an array in this case

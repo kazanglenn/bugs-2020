@@ -5,12 +5,11 @@ import uuidv4 from 'uuid/v4';
 * Init algae array
 * -----------------------------------------------
 */
-export function initAlgae(count) {
+export function initAlgae(count, screenWidth, screenHeight) {
     var algae = [...Array(count)].map(() => ({
       id: uuidv4(),
-      // TODO - width/height from props
-      x: Math.round(Math.random() * 1000),
-      y: Math.round(Math.random() * 500),
+      x: Math.round(Math.random() * screenWidth),
+      y: Math.round(Math.random() * screenHeight),
       rotation: Math.random() * Math.PI * 2,
       // width: Math.round(Math.random() * 7 + 5),
       width: 12,

@@ -8,7 +8,8 @@ import { Line } from 'react-chartjs-2';
 
 const useStyles = makeStyles({
   card: props => ({
-    maxWidth: 1000,
+    maxWidth: "100%",
+    minHeight: props.height,
     maxHeight: props.height,
     margin: 5
   })
@@ -16,6 +17,7 @@ const useStyles = makeStyles({
 
 const options = {
   responsive: true,
+  maintainAspectRatio: false,
   // animation: false,
   scales: {
     xAxes: [{
@@ -59,8 +61,8 @@ const options = {
   },
   layout: {
     padding: {
-      left: 10,
-      right: 10,
+      left: 5,
+      right: 5,
       top: 5,
       bottom: 5
     }
@@ -102,8 +104,6 @@ function SummaryChart(props) {
     <Card className={classes.card}>
       <Line
         data={chartdata}
-        width={1000}
-        height={props.height}
         options={options}
       />
     </Card>

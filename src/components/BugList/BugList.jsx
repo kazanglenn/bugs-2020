@@ -24,7 +24,7 @@ import BugImage from '../../assets/flatworm.png';
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 1000,
+    maxWidth: "100%",
     maxHeight: 700,
     margin: 5,
     display: 'flex',
@@ -52,7 +52,7 @@ function BugList({ bugs }) {
     setOpen(false);
   };
 
-  // TODO - add paging, pop up bug details ...
+  // TODO - add paging though will never be many
   return (
     <Card className={classes.card}>
       <TableContainer component={Paper}>
@@ -65,7 +65,6 @@ function BugList({ bugs }) {
               <TableCell align="right">Energy</TableCell>
               <TableCell align="right">Offspring</TableCell>
               <TableCell align="right">Speed</TableCell>
-              <TableCell align="right">Turning Speed</TableCell>
               <TableCell align="right">Width</TableCell>
               <TableCell align="right">Breed Width</TableCell>
               <TableCell align="right">Breed Energy</TableCell>
@@ -90,7 +89,6 @@ function BugList({ bugs }) {
                 <TableCell align="right">{b.energy}</TableCell>
                 <TableCell align="right">{b.geneology.children.length}</TableCell>
                 <TableCell align="right">{b.speed}</TableCell>
-                <TableCell align="right">{b.turningSpeed.toFixed(6)}</TableCell>
                 <TableCell align="right">{b.width}</TableCell>
                 <TableCell align="right">{b.breedSize}</TableCell>
                 <TableCell align="right">{b.breedThreshold}</TableCell>

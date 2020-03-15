@@ -2,7 +2,8 @@ import { SET_ALGAE, ADD_ALGAE, DELETE_ALGAE } from "../actionTypes";
 import { initAlgae } from '../../components/Simulation/algae';
 
 // TODO - make init count a params
-const algae = (state = initAlgae(500), action) => {
+// TODO - pull width and height from props somehow
+const algae = (state = initAlgae(600, 1000, 500), action) => {
   switch (action.type) {
     case SET_ALGAE:
       return action.payload.algae;
