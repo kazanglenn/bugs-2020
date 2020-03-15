@@ -78,6 +78,7 @@ export default function SimWrapper() {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <SummaryChart height={400}/>
+        <Tracker />
       </TabPanel>
       <TabPanel value={value} index={2}>
         <SpeciesChart height={700}/>

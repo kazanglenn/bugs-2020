@@ -143,8 +143,8 @@ const Engine = withPixiApp(class extends React.Component {
     this.bounds = new PIXI.Rectangle(
       -padding,
       -padding,
-      Number(this.props.app.screen.width) + padding,
-      Number(this.props.app.screen.height) + padding
+      Number(1000) + padding,
+      Number(500) + padding
     );
 
     // initial sizing
@@ -452,12 +452,12 @@ const Engine = withPixiApp(class extends React.Component {
       text={message}
       anchor={0}
       x={5}
-      y={5}
+      y={450}
       style={new PIXI.TextStyle({
         fontSize: 14,
         fontFamily: 'Courier',
         fontWeight: 'bold',
-        fill: '#000080'
+        fill: '#ffbf00'
       })}
     />
 
