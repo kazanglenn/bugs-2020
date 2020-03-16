@@ -8,7 +8,8 @@ import * as PIXI from "pixi.js";
 import uuidv4 from 'uuid/v4';
 
 // images
-import BugImage from '../../assets/flatworm.png';
+import BugImage from '../../assets/horseshoe.png';
+// import BugImage from '../../assets/flatworm.png';
 import AlgaeImage from '../../assets/algae_small.png';
 
 // simulation components
@@ -179,14 +180,15 @@ const Engine = withPixiApp(class extends React.Component {
     this.props.bugs.forEach((item) => {
 
       // BREED
-      if (this.props.bugs.length < this.props.parameters.maxBugs
+      if (this.props.bugs.length < this.props.parameters.maxBugs // less than max
         && item.width >= item.breedSize // big enough
-        && item.energy >= item.breedThreshold) { // with enough energy
+        && item.energy >= item.breedThreshold // with enough energy
+        && Math.floor(Math.random() * 4) === 0) { // and element of chance - fudge factor to slow explosive growth
         tracker.totalBugs++;
         var offspring = Object.assign({}, this.evolve(item)); // empty object to receive contents of item
         // TODO - parameterise how much energy offspring gets, cap energy
-        offspring.energy = Math.floor(item.energy * 0.25); // offspring gets 25% of energy - do this first
-        item.energy = Math.floor(item.energy * 0.75) - this.props.parameters.breedingCost; // lose 25%, plus breeding cost, for breeding
+        offspring.energy = Math.floor(item.energy * 0.40); // offspring gets 25% of energy - do this first
+        item.energy = Math.floor(item.energy * 0.60) - this.props.parameters.breedingCost; // lose 40%, plus breeding cost, for breeding
         offspring.direction = Math.random() * Math.PI * 2; // new heading
         // geneology tracking
         var uuid = uuidv4();
@@ -237,12 +239,10 @@ const Engine = withPixiApp(class extends React.Component {
       // EAT ALGAE
       this.props.algae.forEach((algae, i) => {
         if (contact(item, algae)) {
-          item.direction += (Math.random() - 0.5) * 0.75; // consume clump, opportunity for intelligence
-          // consume the entire contacted algae - no updates
+          // consume the entire contacted algae at once - no updates
           item.energy += algae.energy; // take what energy there is
           this.props.algae.splice(i, 1); // direct manipulation
           // this.props.deleteAlgae(algae); // slow but correct
-          // console.log("consumed",algae.id);
         }
       });
 
@@ -330,7 +330,7 @@ const Engine = withPixiApp(class extends React.Component {
         offspring.height = 5;
 
         var angle = Math.random() * Math.PI * 2;
-        var radius = Math.random() * 40 + 5;
+        var radius = Math.random() * 60 + 5;
         offspring.x += Math.round(Math.cos(angle) * radius);
         offspring.y += Math.round(Math.sin(angle) * radius);
         offspring.rotation = Math.random() * Math.PI * 2;
@@ -384,11 +384,12 @@ const Engine = withPixiApp(class extends React.Component {
     // re-rendering causes algae to work too without direct manipulation - hack
     this.props.setBugs(this.props.bugs.map((bug, i) => {
       bug.cycles++;
-      // GROW
-      // TODO - parameterise init and max sizes
-      if (bug.width < 24 && bug.cycles % 100 === 0) {
+      // GROW - takes time and energy
+      // TODO - parameterise cycles and max sizes
+      if (bug.width < 26 && bug.cycles % 150 === 0 && bug.energy >= 600) {
         bug.width++;
         bug.height += 2;
+        bug.energy -= 200; // TODO - parameterise cost of growth
       }
       return bug;
     }));
@@ -443,9 +444,9 @@ const Engine = withPixiApp(class extends React.Component {
     var bugs = this.props.bugs.map(bug => <BugSprite bug={bug} handleOpen={this.props.handleOpen} />);
 
     var message =
-      "Cycle: ".concat(tracker.ticks)
-        .concat("\n Bugs: ").concat(this.props.bugs.length)
-        .concat("\nAlgae: ").concat(this.props.algae.length);
+      "Cycle: ".concat(tracker.ticks.toString().padStart(7, ' '))
+        .concat("\n Bugs: ").concat(this.props.bugs.length.toString().padStart(7, ' '))
+        .concat("\nAlgae: ").concat(this.props.algae.length.toString().padStart(7, ' '));
 
     // show the 'ticks' on screen - cycle
     var text = <Text
@@ -457,7 +458,7 @@ const Engine = withPixiApp(class extends React.Component {
         fontSize: 14,
         fontFamily: 'Courier',
         fontWeight: 'bold',
-        fill: '#3c3f42'
+        fill: '#000000'
       })}
     />
 

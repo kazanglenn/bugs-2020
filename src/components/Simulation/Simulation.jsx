@@ -24,10 +24,10 @@ import { Bug } from '../Bug';
 */
 const useStyles = makeStyles({
   card: props => ({
-    maxWidth: props.width,
-    maxHeight: props.height,
+    maxWidth: "100%",
+    maxHeight: "100%",
     backgroundImage: 'url(' + BackgroundImage + ')',
-    backgroundRepeat: 'repeat-x',
+    backgroundRepeat: 'repeat',
     margin: 5,
     display: 'flex',
     flexDirection: 'row'
