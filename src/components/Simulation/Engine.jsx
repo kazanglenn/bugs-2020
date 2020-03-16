@@ -198,8 +198,8 @@ const Engine = withPixiApp(class extends React.Component {
         }
         offspring.cycles = 0; // age tracking
         // start small, grow in size
-        offspring.width = 5;
-        offspring.height = 10;
+        offspring.width = 6;
+        offspring.height = 12;
         this.props.bugs.push(offspring); // add adjusted copy
         // this.props.addBug(offspring); // very slow but correct
         tracker.speciesCounts[offspring.tint] ? tracker.speciesCounts[offspring.tint]++ : tracker.speciesCounts[offspring.tint] = 1; // track new births
@@ -384,9 +384,9 @@ const Engine = withPixiApp(class extends React.Component {
     // re-rendering causes algae to work too without direct manipulation - hack
     this.props.setBugs(this.props.bugs.map((bug, i) => {
       bug.cycles++;
-      // GROW until width 15
+      // GROW
       // TODO - parameterise init and max sizes
-      if (bug.width < 22 && bug.cycles % 100 === 0) {
+      if (bug.width < 24 && bug.cycles % 100 === 0) {
         bug.width++;
         bug.height += 2;
       }
@@ -457,7 +457,7 @@ const Engine = withPixiApp(class extends React.Component {
         fontSize: 14,
         fontFamily: 'Courier',
         fontWeight: 'bold',
-        fill: '#ffbf00'
+        fill: '#3c3f42'
       })}
     />
 

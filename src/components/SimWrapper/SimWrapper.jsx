@@ -72,7 +72,7 @@ export default function SimWrapper() {
       </AppBar>
       <TabPanel value={value} index={0}>
         <Controls />
-        <Simulation width={"100%"} height={500}/>
+        <Simulation width={"100%"} height={750}/>
         <SummaryChart height={200}/>
         <Tracker />
       </TabPanel>

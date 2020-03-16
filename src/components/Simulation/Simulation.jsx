@@ -8,7 +8,7 @@ import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 
 // images
-import BackgroundImage from '../../assets/dark_sand_tile.png';
+import BackgroundImage from '../../assets/light_sand_tile.png';
 
 // simulation components
 import ReactViewport from '../ReactViewport';
