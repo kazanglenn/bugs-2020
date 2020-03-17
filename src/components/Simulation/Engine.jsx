@@ -8,8 +8,7 @@ import * as PIXI from "pixi.js";
 import uuidv4 from 'uuid/v4';
 
 // images
-import BugImage from '../../assets/horseshoe.png';
-// import BugImage from '../../assets/flatworm.png';
+import BugImage from '../../assets/flatworm.png';
 import AlgaeImage from '../../assets/algae_small.png';
 
 // simulation components
@@ -386,10 +385,10 @@ const Engine = withPixiApp(class extends React.Component {
       bug.cycles++;
       // GROW - takes time and energy
       // TODO - parameterise cycles and max sizes
-      if (bug.width < 26 && bug.cycles % 150 === 0 && bug.energy >= 600) {
+      if (bug.width < bug.breedSize && bug.energy >= 5000) { // need to accumulate 5000 to grow, before breeding, will be staggered across bugs
         bug.width++;
         bug.height += 2;
-        bug.energy -= 200; // TODO - parameterise cost of growth
+        bug.energy -= 2500; // TODO - parameterise cost of growth; here it is expensive
       }
       return bug;
     }));

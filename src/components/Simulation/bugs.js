@@ -17,8 +17,8 @@ export function initBugs(count, screenWidth, screenHeight) {
     _s: 0.6, // base speed - could add to parameters
     rotation: 0,
     // w/h used for collision detection, and controls sprite size
-    width: 15,
-    height: 30,
+    width: 6,
+    height: 12,
     energy: 400,
     cycles: 0, // track age in cycles
     breedSize: Math.floor(Math.random() * 10) + 10, // minimum width before breeding

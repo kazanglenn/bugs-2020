@@ -19,8 +19,7 @@ import { ReactImageTint } from 'react-image-tint';
 
 // project components
 import { Bug } from '../Bug';
-// import BugImage from '../../assets/flatworm.png';
-import BugImage from '../../assets/micro_horseshoe.png';
+import BugImage from '../../assets/flatworm.png';
 
 
 const useStyles = makeStyles({
