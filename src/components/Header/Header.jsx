@@ -19,7 +19,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
 import InfoIcon from '@material-ui/icons/Info';
-import HomeIcon from '@material-ui/icons/Home';
 import BugReportIcon from '@material-ui/icons/BugReport';
 
 // custom components
@@ -27,6 +26,7 @@ import { Parameters } from '../Parameters';
 import { Title } from '../Title';
 import { About } from '../About';
 import { SimWrapper } from '../SimWrapper';
+import { Footer } from '../Footer';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -96,7 +96,6 @@ export default function Header() {
     >
       <List component="nav" aria-label="navigation">
         {[
-          { text: 'Home', icon: <HomeIcon />, href: '/' },
           { text: 'Simulation', icon: <BugReportIcon />, href: '/simulation' },
           { text: 'About', icon: <InfoIcon />, href: '/about' },
         ].map((entry, index) => (
@@ -132,10 +131,6 @@ export default function Header() {
       </div>
 
       <Switch>
-        <Route exact path="/">
-          <div className={classes.offset} />
-          <Title />
-        </Route>
         <Route exact path="/simulation">
           <div className={classes.offset} />
           <SimWrapper />
@@ -144,6 +139,7 @@ export default function Header() {
           <div className={classes.offset} />
           <Title />
           <About />
+          <Footer />
         </Route>
       </Switch>
 

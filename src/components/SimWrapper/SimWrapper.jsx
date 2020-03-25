@@ -15,6 +15,7 @@ import { SpeciesChart } from '../SpeciesChart';
 import { BugList } from '../BugList';
 import { Controls } from '../Controls';
 import { Tracker } from '../Tracker';
+import { Footer } from '../Footer';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -75,16 +76,20 @@ export default function SimWrapper() {
         <Simulation/>
         <SummaryChart height={200}/>
         <Tracker />
+        <Footer />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <SummaryChart height={400}/>
         <Tracker />
+        <Footer />
       </TabPanel>
       <TabPanel value={value} index={2}>
         <SpeciesChart height={700}/>
+        <Footer />
       </TabPanel>
       <TabPanel value={value} index={3}>
         <BugList />
+        <Footer />
       </TabPanel>
     </div>
   );
