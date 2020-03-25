@@ -4,17 +4,17 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   footer: {
-    textDecoration: 'none',
-    width: 'calc(100% - 10px)',
+    backgroundColor: 'rgb(63, 63, 191, 0.1)',
     padding: '5px',
     height: '22px',
     justifyContent: 'flex-end',
-    position: 'absolute',
+    position: 'fixed',
     bottom: 0,
   },
   link: {
     color: 'rgb(63, 63, 191, 0.9)',
     "&:hover": {
+      textDecoration: 'none',
       color: '#0066ff'
     }
   }
