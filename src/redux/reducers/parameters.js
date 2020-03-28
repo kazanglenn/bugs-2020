@@ -2,6 +2,7 @@ import { SET_PARAMETERS, RESET_PARAMETERS } from "../actionTypes";
 
 // init value
 const initParameters = {
+  rockCount: 20,
   maxBugs: 250,
   breedingCost: 200,
   maxAlgae: 1500,

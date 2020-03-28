@@ -29,13 +29,21 @@ import algae21 from "../../assets/algae/algae21.png";
 import algae22 from "../../assets/algae/algae22.png";
 import algae23 from "../../assets/algae/algae23.png";
 import algae24 from "../../assets/algae/algae24.png";
+// alt green
+import algae25 from "../../assets/algae/algae25.png";
+import algae26 from "../../assets/algae/algae26.png";
+import algae27 from "../../assets/algae/algae27.png";
+import algae28 from "../../assets/algae/algae28.png";
+import algae29 from "../../assets/algae/algae29.png";
+import algae30 from "../../assets/algae/algae30.png";
 
 
 const images = [
   algae01, algae02, algae03, algae04, algae05, algae06, // green
   algae07, algae08, algae09, algae10, algae11, algae12, // red
   algae13, algae14, algae15, algae16, algae17, algae18, // blue
-  algae19, algae20, algae21, algae22, algae23, algae24  // brown
+  algae19, algae20, algae21, algae22, algae23, algae24, // brown
+  algae25, algae26, algae27, algae28, algae29, algae30  // alt green
 ];
 
 /**

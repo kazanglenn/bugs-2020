@@ -243,7 +243,9 @@ const Engine = withPixiApp(class extends React.Component {
             // avoid
             else {
               item.direction += (Math.random() - 0.5) * 0.75; // avoidance
+              item.speed = 0;
               other.direction += (Math.random() - 0.5) * 0.75; // avoidance
+              other.speed = 0;
             }
           }
         }
@@ -375,11 +377,11 @@ const Engine = withPixiApp(class extends React.Component {
         }
 
         // check overlap - if overlap, do not breed (do no add offpsring) until space
-        let isContact = false;
+        var isContact = false;
         // rocks
         // don't use foreach so can break on first hit
         // TODO - more accurate contact detection, this is not working well, offset
-        for (var i = 0; i < this.props.rocks.length; i++) { 
+        for (let i = 0; i < this.props.rocks.length; i++) { 
           if (contact(offspring, this.props.rocks[i])) {
             isContact = true;
             break;
@@ -387,7 +389,7 @@ const Engine = withPixiApp(class extends React.Component {
         }
         // other algae
         if(!isContact){
-          for (var i = 0; i < this.props.algae.length; i++) {
+          for (let i = 0; i < this.props.algae.length; i++) {
             if (contact(offspring, this.props.algae[i])) {
               isContact = true;
               break;
@@ -516,9 +518,9 @@ const Engine = withPixiApp(class extends React.Component {
         // stop processing
         this.props.app.ticker.stop();
         // reset the algae and bugs
-        this.props.setRocks(initRocks(30, 1000, 500));
+        this.props.setRocks(initRocks(this.props.parameters.rockCount, 1000, 500));
         this.props.setAlgae(initAlgae(600, 1000, 500, this.props.rocks));
-        this.props.setBugs(initBugs(5, 1000, 500));
+        this.props.setBugs(initBugs(10, 1000, 500));
         // reset measures redux array
         this.props.resetMeasure();
         // reset species redux array

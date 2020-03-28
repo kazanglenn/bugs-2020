@@ -138,6 +138,12 @@ function Parameters(props) {
   const [params, setParams] = useState(props.parameters);
 
   // TODO - consolidate functions, needless repetition here
+  const handleRocksChange = (event, newValue) => {
+    var newParams = Object.assign({}, params);
+    newParams.rockCount = newValue;
+    setParams(newParams);
+  };
+
   const handleMaxBugsChange = (event, newValue) => {
     var newParams = Object.assign({}, params);
     newParams.maxBugs = newValue;
@@ -177,6 +183,19 @@ function Parameters(props) {
 
   return (
     <div className={classes.root}>
+
+      <Typography id="max-bugs-slider" gutterBottom>
+        Rocks (applies on reset)
+      </Typography>
+      <Slider
+        value={params.rockCount}
+        onChange={handleRocksChange}
+        aria-labelledby="rocks-slider"
+        step={1}
+        marks={smallMarks}
+        min={0}
+        max={50}
+      />
 
       <Typography id="max-bugs-slider" gutterBottom>
         Maximum Bug Population
