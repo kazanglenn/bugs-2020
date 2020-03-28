@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/bugs-2020/static/css/main.8f2809f3.chunk.css",
-    "main.js": "/bugs-2020/static/js/main.19dc44ff.chunk.js",
-    "main.js.map": "/bugs-2020/static/js/main.19dc44ff.chunk.js.map",
+    "main.js": "/bugs-2020/static/js/main.0c9b7e2a.chunk.js",
+    "main.js.map": "/bugs-2020/static/js/main.0c9b7e2a.chunk.js.map",
     "runtime-main.js": "/bugs-2020/static/js/runtime-main.3baa2760.js",
     "runtime-main.js.map": "/bugs-2020/static/js/runtime-main.3baa2760.js.map",
-    "static/js/2.a2c91710.chunk.js": "/bugs-2020/static/js/2.a2c91710.chunk.js",
-    "static/js/2.a2c91710.chunk.js.map": "/bugs-2020/static/js/2.a2c91710.chunk.js.map",
+    "static/js/2.082f8e8e.chunk.js": "/bugs-2020/static/js/2.082f8e8e.chunk.js",
+    "static/js/2.082f8e8e.chunk.js.map": "/bugs-2020/static/js/2.082f8e8e.chunk.js.map",
     "index.html": "/bugs-2020/index.html",
-    "precache-manifest.015faf09ced011a7cd0fac6479e791f3.js": "/bugs-2020/precache-manifest.015faf09ced011a7cd0fac6479e791f3.js",
+    "precache-manifest.acaa8d277fd40bdb62d3c25106d36387.js": "/bugs-2020/precache-manifest.acaa8d277fd40bdb62d3c25106d36387.js",
     "service-worker.js": "/bugs-2020/service-worker.js",
     "static/css/main.8f2809f3.chunk.css.map": "/bugs-2020/static/css/main.8f2809f3.chunk.css.map",
-    "static/js/2.a2c91710.chunk.js.LICENSE.txt": "/bugs-2020/static/js/2.a2c91710.chunk.js.LICENSE.txt",
+    "static/js/2.082f8e8e.chunk.js.LICENSE.txt": "/bugs-2020/static/js/2.082f8e8e.chunk.js.LICENSE.txt",
     "static/media/algae01.png": "/bugs-2020/static/media/algae01.ea0f6fa3.png",
     "static/media/algae02.png": "/bugs-2020/static/media/algae02.11c814b4.png",
     "static/media/algae03.png": "/bugs-2020/static/media/algae03.3927de3c.png",
@@ -36,6 +36,12 @@
     "static/media/algae22.png": "/bugs-2020/static/media/algae22.c6d067cb.png",
     "static/media/algae23.png": "/bugs-2020/static/media/algae23.8f1bbdb9.png",
     "static/media/algae24.png": "/bugs-2020/static/media/algae24.f70a9573.png",
+    "static/media/algae25.png": "/bugs-2020/static/media/algae25.72be28c0.png",
+    "static/media/algae26.png": "/bugs-2020/static/media/algae26.a8a262cd.png",
+    "static/media/algae27.png": "/bugs-2020/static/media/algae27.4a2165b0.png",
+    "static/media/algae28.png": "/bugs-2020/static/media/algae28.07992a9d.png",
+    "static/media/algae29.png": "/bugs-2020/static/media/algae29.cde9a150.png",
+    "static/media/algae30.png": "/bugs-2020/static/media/algae30.1218d1d8.png",
     "static/media/bugs2020.png": "/bugs-2020/static/media/bugs2020.bfb2339d.png",
     "static/media/rock01.png": "/bugs-2020/static/media/rock01.b5fcd139.png",
     "static/media/rock02.png": "/bugs-2020/static/media/rock02.2bfc7dfe.png",
@@ -47,12 +53,14 @@
     "static/media/rock08.png": "/bugs-2020/static/media/rock08.baacd9ea.png",
     "static/media/rock09.png": "/bugs-2020/static/media/rock09.f39da00d.png",
     "static/media/rock10.png": "/bugs-2020/static/media/rock10.f862a86d.png",
+    "static/media/rock11.png": "/bugs-2020/static/media/rock11.e2633fef.png",
+    "static/media/rock12.png": "/bugs-2020/static/media/rock12.259d1f9b.png",
     "static/media/sand.png": "/bugs-2020/static/media/sand.c5fa7d35.png"
   },
   "entrypoints": [
     "static/js/runtime-main.3baa2760.js",
-    "static/js/2.a2c91710.chunk.js",
+    "static/js/2.082f8e8e.chunk.js",
     "static/css/main.8f2809f3.chunk.css",
-    "static/js/main.19dc44ff.chunk.js"
+    "static/js/main.0c9b7e2a.chunk.js"
   ]
 }
