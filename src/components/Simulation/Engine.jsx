@@ -235,9 +235,7 @@ const Engine = withPixiApp(class extends React.Component {
             }
             else {
               // avoid
-              item.direction += (Math.random() - 0.5) * 0.75; // avoidance
               item.speed = 0;
-              other.direction += (Math.random() - 0.5) * 0.75; // avoidance
               other.speed = 0;
             }
           }
