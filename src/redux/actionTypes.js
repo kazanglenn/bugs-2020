@@ -19,3 +19,5 @@ export const UPDATE_BUG = "UPDATE_BUG";
 export const SET_ALGAE = "SET_ALGAE";
 export const ADD_ALGAE = "ADD_ALGAE";
 export const DELETE_ALGAE = "DELETE_ALGAE";
+
+export const SET_ROCKS = "SET_ROCKS";

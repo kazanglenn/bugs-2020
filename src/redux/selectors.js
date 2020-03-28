@@ -5,3 +5,4 @@ export const getTracker = state => state.tracker ? state.tracker : {};
 export const getParameters = state => state.parameters ? state.parameters : {};
 export const getBugs = state => state.bugs ? state.bugs : [];
 export const getAlgae = state => state.algae ? state.algae : [];
+export const getRocks = state => state.rocks ? state.rocks : [];

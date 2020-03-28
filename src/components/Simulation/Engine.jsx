@@ -1,21 +1,20 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { addMeasure, addSpeciesCount, resetMeasure, resetSpeciesCount, setControl, setTracker } from '../../redux/actions';
-import { setAlgae, addAlgae, deleteAlgae, setBugs, addBug, deleteBug } from '../../redux/actions';
-import { getControl, getParameters, getAlgae, getBugs } from '../../redux/selectors';
+import { setAlgae, addAlgae, deleteAlgae, setBugs, addBug, deleteBug, setRocks } from '../../redux/actions';
+import { getControl, getParameters, getAlgae, getBugs, getRocks } from '../../redux/selectors';
 import { Text, withPixiApp, Sprite, useApp } from '@inlet/react-pixi';
 import * as PIXI from "pixi.js";
 import uuidv4 from 'uuid/v4';
 
-// images
-import BugImage from '../../assets/flatworm.png';
-import AlgaeImage from '../../assets/algae_small.png';
-
 // simulation components
 import { contact, wrap } from './physics';
 import brain from './brain';
+
+// initialisation components
 import { initBugs } from './bugs';
 import { initAlgae } from './algae';
+import { initRocks } from './rocks';
 
 
 /**
@@ -40,7 +39,7 @@ var tracker = {
 */
 const BugSprite = (props) => (
   <Sprite {...props.bug}
-    image={BugImage}
+    image={props.bug.image}
     anchor={0.5}
     overwriteProps={true}
     ignoreEvents={true}
@@ -57,9 +56,24 @@ const BugSprite = (props) => (
 * Algae Component
 * -----------------------------------------------
 */
-const AlgaeSprite = props => (
-  <Sprite {...props}
-    image={AlgaeImage}
+const AlgaeSprite = algae => (
+  <Sprite {...algae}
+    image={algae.image}
+    anchor={0.5}
+    overwriteProps={true}
+    ignoreEvents={true}
+  />
+);
+
+/**
+* -----------------------------------------------
+* Rock Sprite
+* -----------------------------------------------
+*/
+// TODO - use randmoly assigned image - rock.image
+const RockSprite = rock => (
+  <Sprite {...rock}
+    image={rock.image}
     anchor={0.5}
     overwriteProps={true}
     ignoreEvents={true}
@@ -251,9 +265,21 @@ const Engine = withPixiApp(class extends React.Component {
       item.speed = movement.speed;
 
       // MOVE 
+      var oldX = item.x;
+      var oldY = item.y;
       item.x = item.x + Math.sin(item.direction) * (item.speed * item._s);
       item.y = item.y + Math.cos(item.direction) * (item.speed * item._s);
       item.rotation = -item.direction + Math.PI;
+
+      // CHECK IF ROCK HIT, STOP IF SO
+      for (var i = 0; i < this.props.rocks.length; i++) { 
+        if (contact(item, this.props.rocks[i])) {
+          item.speed = 0;
+          item.x = oldX;
+          item.y = oldY;
+          break;
+        }
+      }
 
       // wrap testing
       if (item.x < this.bounds.x) {
@@ -350,14 +376,26 @@ const Engine = withPixiApp(class extends React.Component {
 
         // check overlap - if overlap, do not breed (do no add offpsring) until space
         let isContact = false;
-        for (var i = 0; i < this.props.algae.length; i++) { // don't use foreach so can break on first hit
-          if (contact(offspring, this.props.algae[i])) {
+        // rocks
+        // don't use foreach so can break on first hit
+        // TODO - more accurate contact detection, this is not working well, offset
+        for (var i = 0; i < this.props.rocks.length; i++) { 
+          if (contact(offspring, this.props.rocks[i])) {
             isContact = true;
             break;
           }
         }
+        // other algae
+        if(!isContact){
+          for (var i = 0; i < this.props.algae.length; i++) {
+            if (contact(offspring, this.props.algae[i])) {
+              isContact = true;
+              break;
+            }
+          }
+        }
 
-        // no overlap so create
+        // no overlap so create new algae
         if (!isContact) {
           // only take energy away when space to breed
           item.energy = Math.round(item.energy * 0.9); // keep 90%
@@ -439,6 +477,7 @@ const Engine = withPixiApp(class extends React.Component {
   }
 
   render = () => {
+    var rocks = this.props.rocks.map(props => <RockSprite {...props}/>)
     var algae = this.props.algae.map(props => <AlgaeSprite {...props} />);
     var bugs = this.props.bugs.map(bug => <BugSprite bug={bug} handleOpen={this.props.handleOpen} />);
 
@@ -477,8 +516,9 @@ const Engine = withPixiApp(class extends React.Component {
         // stop processing
         this.props.app.ticker.stop();
         // reset the algae and bugs
+        this.props.setRocks(initRocks(30, 1000, 500));
+        this.props.setAlgae(initAlgae(600, 1000, 500, this.props.rocks));
         this.props.setBugs(initBugs(5, 1000, 500));
-        this.props.setAlgae(initAlgae(600, 1000, 500));
         // reset measures redux array
         this.props.resetMeasure();
         // reset species redux array
@@ -498,24 +538,26 @@ const Engine = withPixiApp(class extends React.Component {
     }
 
     if (this.props.bugs.length > 0) {
-      return [...algae, ...bugs, text];
+      return [...rocks, ...algae, ...bugs, text];
     }
-    return [...algae, ...bugs, text, notice];
+    return [...rocks, ...algae, ...bugs, text, notice];
   }
 });
 
 
 const mapStateToProps = state => {
-  const bugs = getBugs(state);
+  const rocks = getRocks(state);
   const algae = getAlgae(state);
+  const bugs = getBugs(state);
   const control = getControl(state);
   const parameters = getParameters(state);
-  return { bugs, algae, control, parameters };
+  return { rocks, algae, bugs, control, parameters };
 };
 
 const mapDispatchToProps = {
   setBugs, addBug, deleteBug,
   setAlgae, addAlgae, deleteAlgae,
+  setRocks,
   addMeasure, resetMeasure,
   addSpeciesCount, resetSpeciesCount,
   setControl,

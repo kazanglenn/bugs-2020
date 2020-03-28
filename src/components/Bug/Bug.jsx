@@ -2,7 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Typography from '@material-ui/core/Typography';
-import BugImage from '../../assets/flatworm.png';
 import * as PIXI from "pixi.js";
 import { ReactImageTint } from 'react-image-tint';
 import Table from '@material-ui/core/Table';
@@ -29,7 +28,6 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     width: 400,
-    // backgroundColor: theme.palette.background.paper,
     backgroundColor: '#DDDDDD',
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
@@ -58,8 +56,8 @@ export default function Bug(props) {
     >{props.bug !== null ?
       <div className={classes.paper}>
         <div className={classes.header}>
-        <Avatar alt={"iamge of bug " + props.bug.geneology.id}>
-          <ReactImageTint src={BugImage} color={colourString} />
+        <Avatar alt={"image of bug " + props.bug.geneology.id}>
+          <ReactImageTint src={props.bug.image} color={colourString} />
         </Avatar>
         &nbsp;
         <Typography variant="body1" color="primary" component="p" align="center">

@@ -1,6 +1,14 @@
 import uuidv4 from 'uuid/v4';
 import brain from './brain';
 
+import bug01 from "../../assets/bugs/bug01.png";
+import bug02 from "../../assets/bugs/bug02.png";
+import bug03 from "../../assets/bugs/bug03.png";
+
+const images = [
+  bug01, bug02, bug03
+];
+
 /**
 * -----------------------------------------------
 * Init bugs array
@@ -8,6 +16,7 @@ import brain from './brain';
 */
 export function initBugs(count, screenWidth, screenHeight) {
   var bugs = [...Array(count)].map(() => ({
+    image: images[Math.floor(Math.random() * images.length)],
     brain: new brain(),
     speed: Math.ceil((2 + Math.random() * 4) * 0.5),
     direction: Math.random() * Math.PI * 2,

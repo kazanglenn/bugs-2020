@@ -1,16 +1,66 @@
+// assumes circles not squares
+export function contact(sprite1, sprite2) {
+  // return contactFirst(sprite1, sprite2);
+  return cirleCollision(sprite1, sprite2);
+  // return rectIntersect(
+  //   sprite1.x,
+  //   sprite1.y,
+  //   sprite1.width,
+  //   sprite1.height,
+  //   sprite2.x,
+  //   sprite2.y,
+  //   sprite2.width,
+  //   sprite2.height
+  // );
+};
+
+function cirleCollision(circle1, circle2) {
+  circle1.radius = circle1.width/2;
+  circle2.radius = circle2.width/2;
+
+  var dx = circle1.x - circle2.x;
+  var dy = circle1.y - circle2.y;
+  var distance = Math.sqrt(dx * dx + dy * dy);
+  
+  if (distance < circle1.radius + circle2.radius) {
+    return true;
+  }
+  return false;
+}
+
+// see https://spicyyoghurt.com/tutorials/html5-javascript-game-development/collision-detection-physics
+
+function rectIntersect(x1, y1, w1, h1, x2, y2, w2, h2) {
+  console.log("rect")
+  // Check x and y for overlap
+  if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2) {
+      return false;
+  }
+  return true;
+};
+
+function circleIntersect(x1, y1, r1, x2, y2, r2) {
+  // Calculate the distance between the two circles
+  var squareDistance = (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2);
+
+  // When the distance is smaller or equal to the sum
+  // of the two radius, the circles touch or overlap
+  return squareDistance <= ((r1 + r2) * (r1 + r2))
+};
+
 /**
 * -----------------------------------------------
 * Contact function - have two sprites connected?  
 * see https://github.com/kittykatattack/learningPixi#the-hittestrectangle-function
 * -----------------------------------------------
 */
-export function contact(r1, r2) {
+export function contactFirst(r1, r2) {
 
     //Define the variables we'll need to calculate
     let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
   
     //hit will determine whether there's a collision
-    hit = false;
+    hit = false; // assume not to start
   
     // console.log("h", r1.height, r2.height);
   
@@ -36,21 +86,11 @@ export function contact(r1, r2) {
   
     //Check for a collision on the x axis
     if (Math.abs(vx) < combinedHalfWidths) {
-  
       //A collision might be occurring. Check for a collision on the y axis
       if (Math.abs(vy) < combinedHalfHeights) {
-  
         //There's definitely a collision happening
         hit = true;
-      } else {
-  
-        //There's no collision on the y axis
-        hit = false;
       }
-    } else {
-  
-      //There's no collision on the x axis
-      hit = false;
     }
   
     //`hit` will be either `true` or `false`
@@ -75,4 +115,4 @@ export function contact(r1, r2) {
       item.y -= height;
     }
     return item;
-  }
+  };

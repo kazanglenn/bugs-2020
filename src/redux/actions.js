@@ -5,7 +5,8 @@ import {
   SET_TRACKER, 
   SET_PARAMETERS, RESET_PARAMETERS,
   SET_BUGS, ADD_BUG, DELETE_BUG, UPDATE_BUG,
-  SET_ALGAE, ADD_ALGAE, DELETE_ALGAE
+  SET_ALGAE, ADD_ALGAE, DELETE_ALGAE,
+  SET_ROCKS
 } from "./actionTypes";
 
 export const addMeasure = measure => ({
@@ -101,5 +102,12 @@ export const deleteAlgae = algae => ({
   type: DELETE_ALGAE,
   payload: {
     algae
+  }
+});
+
+export const setRocks = rocks => ({
+  type: SET_ROCKS,
+  payload: {
+    rocks
   }
 });

@@ -19,8 +19,6 @@ import { ReactImageTint } from 'react-image-tint';
 
 // project components
 import { Bug } from '../Bug';
-import BugImage from '../../assets/flatworm.png';
-
 
 const useStyles = makeStyles({
   card: {
@@ -80,7 +78,7 @@ function BugList({ bugs }) {
                 <TableCell align="left">
                   <CardActions>
                     <CardMedia className={classes.media} title={"View bug " + b.geneology.id} onClick={() => {handleOpen(b)}} >
-                    <ReactImageTint src={BugImage} color={colourString} />
+                    <ReactImageTint src={b.image} color={colourString} />
                     </CardMedia>
                   </CardActions>
                 </TableCell>
