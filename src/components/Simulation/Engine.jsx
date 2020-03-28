@@ -132,7 +132,7 @@ function resize(app) {
     }
 
     // each tab causes a call, once rendered - here check we are dealing with the PIXI tab
-    if(app.renderer) {
+    if (app.renderer) {
       // Set the game screen size to the new values.
       // This command only makes the screen bigger --- it does not scale the contents of the game.
       // There will be a lot of extra room --- or missing room --- if we don't scale the stage.
@@ -223,25 +223,18 @@ const Engine = withPixiApp(class extends React.Component {
       // EAT OTHER BUGS - smaller bugs always eaten, supports growth
       this.props.bugs.forEach((other) => {
         // don't test against self, based on position of other value
-        if (other.geneology.id !== item.geneology.id // don't compare to self!
-          && item.tint !== other.tint
-          && (item.geneology.id !== other.geneology.parent && item.geneology.parent !== other.geneology.id)) {
-          // if not offspring and touching and smaller, eat the smaller one, or be eaten
+        if (other.geneology.id !== item.geneology.id) { // don't compare to self!
           if (contact(item, other)) {
-            // eat
-            if (item.width > other.width) {
-              item.energy += other.energy; // take what energy there is
-              other.energy = 0;
-              // other.tint = 0xFFFFFF; // flash white before removal
+            if (item.tint !== other.tint
+              && (item.geneology.id !== other.geneology.parent && item.geneology.parent !== other.geneology.id)) {
+              // eat if contacted smaller bug
+              if (item.width > other.width) {
+                item.energy += other.energy; // take what energy there is
+                other.energy = 0;
+              }
             }
-            // be eaten
-            else if (item.width < other.width) {
-              other.energy += item.energy; // take what energy there is
-              item.energy = 0;
-              // item.tint = 0xFFFFFF; // flash white before removal
-            }
-            // avoid
             else {
+              // avoid
               item.direction += (Math.random() - 0.5) * 0.75; // avoidance
               item.speed = 0;
               other.direction += (Math.random() - 0.5) * 0.75; // avoidance
@@ -274,7 +267,7 @@ const Engine = withPixiApp(class extends React.Component {
       item.rotation = -item.direction + Math.PI;
 
       // CHECK IF ROCK HIT, STOP IF SO
-      for (var i = 0; i < this.props.rocks.length; i++) { 
+      for (var i = 0; i < this.props.rocks.length; i++) {
         if (contact(item, this.props.rocks[i])) {
           item.speed = 0;
           item.x = oldX;
@@ -381,14 +374,14 @@ const Engine = withPixiApp(class extends React.Component {
         // rocks
         // don't use foreach so can break on first hit
         // TODO - more accurate contact detection, this is not working well, offset
-        for (let i = 0; i < this.props.rocks.length; i++) { 
+        for (let i = 0; i < this.props.rocks.length; i++) {
           if (contact(offspring, this.props.rocks[i])) {
             isContact = true;
             break;
           }
         }
         // other algae
-        if(!isContact){
+        if (!isContact) {
           for (let i = 0; i < this.props.algae.length; i++) {
             if (contact(offspring, this.props.algae[i])) {
               isContact = true;
@@ -479,7 +472,7 @@ const Engine = withPixiApp(class extends React.Component {
   }
 
   render = () => {
-    var rocks = this.props.rocks.map(props => <RockSprite {...props}/>)
+    var rocks = this.props.rocks.map(props => <RockSprite {...props} />)
     var algae = this.props.algae.map(props => <AlgaeSprite {...props} />);
     var bugs = this.props.bugs.map(bug => <BugSprite bug={bug} handleOpen={this.props.handleOpen} />);
 
