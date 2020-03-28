@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "66403262f8d52a876e49fc5c1c5c73a5",
+    "revision": "122cada5eedfdc26cfdf9f5e6ab74a12",
     "url": "/bugs-2020/index.html"
   },
   {
-    "revision": "2797f70f165e0711483a",
+    "revision": "08c5eda0df6d2b6a5471",
     "url": "/bugs-2020/static/css/main.8f2809f3.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/bugs-2020/static/js/2.082f8e8e.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "2797f70f165e0711483a",
-    "url": "/bugs-2020/static/js/main.0c9b7e2a.chunk.js"
+    "revision": "08c5eda0df6d2b6a5471",
+    "url": "/bugs-2020/static/js/main.a88d59da.chunk.js"
   },
   {
     "revision": "d8c5a7625d3f03c586cb",
@@ -148,52 +148,52 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/bugs-2020/static/media/bugs2020.bfb2339d.png"
   },
   {
-    "revision": "b5fcd139a5b75138509067e9f7045333",
-    "url": "/bugs-2020/static/media/rock01.b5fcd139.png"
+    "revision": "dcc5312e10f08809507904de632024c1",
+    "url": "/bugs-2020/static/media/rock01.dcc5312e.png"
   },
   {
-    "revision": "2bfc7dfe60dd0eee0c2ef50f16672963",
-    "url": "/bugs-2020/static/media/rock02.2bfc7dfe.png"
+    "revision": "a9bb4d65279ae704161afe1d51fd07d9",
+    "url": "/bugs-2020/static/media/rock02.a9bb4d65.png"
   },
   {
-    "revision": "d61b9b99a7527c220ce0c452147432d3",
-    "url": "/bugs-2020/static/media/rock03.d61b9b99.png"
+    "revision": "015d85af5efa9cc0326a00929bb3603d",
+    "url": "/bugs-2020/static/media/rock03.015d85af.png"
   },
   {
-    "revision": "ae98a323a7455f65e6d7bd51b8d3396a",
-    "url": "/bugs-2020/static/media/rock04.ae98a323.png"
+    "revision": "67ceb5d3e3e45cc017617f738b9fc5b2",
+    "url": "/bugs-2020/static/media/rock04.67ceb5d3.png"
   },
   {
-    "revision": "34371b1ad7a83e301448753dd1ca45af",
-    "url": "/bugs-2020/static/media/rock05.34371b1a.png"
+    "revision": "8d6a1f3f35e83f75102b656a4aa2776d",
+    "url": "/bugs-2020/static/media/rock05.8d6a1f3f.png"
   },
   {
-    "revision": "67c090ea89ccee9596edc03c50b88a40",
-    "url": "/bugs-2020/static/media/rock06.67c090ea.png"
+    "revision": "94c2ca991fd7e26871bab63c318b1a4b",
+    "url": "/bugs-2020/static/media/rock06.94c2ca99.png"
   },
   {
-    "revision": "e2fc011812ad4351017e88090929b956",
-    "url": "/bugs-2020/static/media/rock07.e2fc0118.png"
+    "revision": "2fa909db4fde3cc1441731e38283edf2",
+    "url": "/bugs-2020/static/media/rock07.2fa909db.png"
   },
   {
-    "revision": "baacd9eadccfffb1392fede705b7731d",
-    "url": "/bugs-2020/static/media/rock08.baacd9ea.png"
+    "revision": "8a074d06e8d58bf5dbccd0ae624c15b1",
+    "url": "/bugs-2020/static/media/rock08.8a074d06.png"
   },
   {
-    "revision": "f39da00d04e28d033171f1107aceb417",
-    "url": "/bugs-2020/static/media/rock09.f39da00d.png"
+    "revision": "a66a6cc15e2e366eba8995ea890f4c6b",
+    "url": "/bugs-2020/static/media/rock09.a66a6cc1.png"
   },
   {
-    "revision": "f862a86d2eaf87f09722b7ad80872ffb",
-    "url": "/bugs-2020/static/media/rock10.f862a86d.png"
+    "revision": "32bffd4fd2d9b045e259fb9eeb4f9982",
+    "url": "/bugs-2020/static/media/rock10.32bffd4f.png"
   },
   {
-    "revision": "e2633fefae3795e0ad29ef003bcf8cec",
-    "url": "/bugs-2020/static/media/rock11.e2633fef.png"
+    "revision": "60de63e17dedf3444a7bd48a6523f318",
+    "url": "/bugs-2020/static/media/rock11.60de63e1.png"
   },
   {
-    "revision": "259d1f9b54fe7d75cb0351663b4043ed",
-    "url": "/bugs-2020/static/media/rock12.259d1f9b.png"
+    "revision": "919fe3ec3faa84491c8b3edf0ed0c229",
+    "url": "/bugs-2020/static/media/rock12.919fe3ec.png"
   },
   {
     "revision": "c5fa7d35f36a9ff6ed669832f8117c7a",
