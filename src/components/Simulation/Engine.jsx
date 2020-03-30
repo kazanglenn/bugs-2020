@@ -530,10 +530,12 @@ const Engine = withPixiApp(class extends React.Component {
         console.log("control not recognised ...");
     }
 
+    // note -- algae may be under the rocks, this hides the problem
+    // objects rendered in order of return statement
     if (this.props.bugs.length > 0) {
-      return [...rocks, ...algae, ...bugs, text];
+      return [...algae, ...rocks, ...bugs, text];
     }
-    return [...rocks, ...algae, ...bugs, text, notice];
+    return [...algae, ...rocks, ...bugs, text, notice];
   }
 });
 

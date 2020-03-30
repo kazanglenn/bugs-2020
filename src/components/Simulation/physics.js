@@ -5,8 +5,8 @@ export function contact(sprite1, sprite2) {
 
 // cirle collision detection algorithm
 function cirleCollision(circle1, circle2) {
-  circle1.radius = circle1.width / 2;
-  circle2.radius = circle2.width / 2;
+  circle1.radius = circle1.height / 2;
+  circle2.radius = circle2.height / 2;
 
   var dx = circle1.x - circle2.x;
   var dy = circle1.y - circle2.y;
